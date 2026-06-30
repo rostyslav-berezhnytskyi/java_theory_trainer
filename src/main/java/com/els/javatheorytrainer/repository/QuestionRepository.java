@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
+    List<Question> findAllByOrderBySectionVolumeSortOrderAscSectionSortOrderAscSortOrderAscIdAsc();
+
     List<Question> findBySectionIdOrderBySortOrderAscIdAsc(Long sectionId);
 
     List<Question> findByStatusOrderBySectionSortOrderAscSortOrderAscIdAsc(QuestionStatus status);

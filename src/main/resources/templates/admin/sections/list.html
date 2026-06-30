@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Розділи')}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('sections')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Розділи')}"></div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Список розділів</h2>
+
+                <a class="btn btn-primary" th:href="@{/admin/sections/new}">
+                    + Додати розділ
+                </a>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Том</th>
+                    <th>Назва</th>
+                    <th>Slug</th>
+                    <th>Порядок</th>
+                    <th>Статус</th>
+                    <th>Дії</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="section : ${sections}">
+                    <td th:text="${section.id}">1</td>
+                    <td th:text="${section.volume.title}">Java Core</td>
+                    <td th:text="${section.title}">JVM, Memory</td>
+                    <td th:text="${section.slug}">jvm-memory</td>
+                    <td th:text="${section.sortOrder}">0</td>
+                    <td>
+                        <span th:if="${section.active}" class="badge badge-green">Активний</span>
+                        <span th:if="${!section.active}" class="badge badge-gray">Архів</span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-small"
+                               th:href="@{/admin/sections/{id}/edit(id=${section.id})}">
+                                Редагувати
+                            </a>
+
+                            <form th:if="${section.active}"
+                                  class="inline-form"
+                                  th:action="@{/admin/sections/{id}/archive(id=${section.id})}"
+                                  method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-danger" type="submit">
+                                    Архівувати
+                                </button>
+                            </form>
+
+                            <form th:if="${!section.active}"
+                                  class="inline-form"
+                                  th:action="@{/admin/sections/{id}/activate(id=${section.id})}"
+                                  method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-primary" type="submit">
+                                    Активувати
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(sections)}">
+                    <td colspan="7">Поки немає жодного розділу.</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

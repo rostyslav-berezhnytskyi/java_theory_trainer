@@ -1,20 +1,40 @@
 <!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <title>Java Theory Trainer Admin</title>
-</head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Адмінка')}"></head>
+
 <body>
-<h1>Java Theory Trainer Admin</h1>
+<div class="app-shell">
 
-<ul>
-    <li><a href="/admin/volumes">Томи</a></li>
-    <li><a href="/admin/sections">Розділи</a></li>
-    <li><a href="/admin/questions">Питання</a></li>
-</ul>
+    <div th:replace="~{admin/fragments/layout :: sidebar('dashboard')}"></div>
 
-<form method="post" action="/logout">
-    <button type="submit">Logout</button>
-</form>
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Адмінка')}"></div>
+
+        <div class="dashboard-grid">
+            <a class="dashboard-card" th:href="@{/admin/volumes}">
+                <div class="dashboard-card-title">Томи</div>
+                <div class="dashboard-card-text">
+                    Великі блоки навчання: Java Core, Spring, Hibernate, Algorithms.
+                </div>
+            </a>
+
+            <a class="dashboard-card" th:href="@{/admin/sections}">
+                <div class="dashboard-card-title">Розділи</div>
+                <div class="dashboard-card-text">
+                    Підрозділи всередині томів: JVM, OOP, Collections, Security.
+                </div>
+            </a>
+
+            <a class="dashboard-card" th:href="@{/admin/questions}">
+                <div class="dashboard-card-title">Питання</div>
+                <div class="dashboard-card-text">
+                    База питань, коротких відповідей, повних пояснень і підказок.
+                </div>
+            </a>
+        </div>
+    </main>
+
+</div>
 </body>
 </html>

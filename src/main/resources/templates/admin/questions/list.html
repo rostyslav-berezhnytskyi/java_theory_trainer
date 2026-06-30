@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Питання')}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('questions')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Питання')}"></div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Список питань</h2>
+
+                <a class="btn btn-primary" th:href="@{/admin/questions/new}">
+                    + Додати питання
+                </a>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Том</th>
+                    <th>Розділ</th>
+                    <th>Питання</th>
+                    <th>Складність</th>
+                    <th>Статус</th>
+                    <th>Порядок</th>
+                    <th>Дії</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="question : ${questions}">
+                    <td th:text="${question.id}">1</td>
+
+                    <td th:text="${question.section.volume.title}">Java Core</td>
+
+                    <td th:text="${question.section.title}">JVM, Memory</td>
+
+                    <td>
+                        <div class="question-preview" th:text="${question.questionText}">
+                            Що таке JVM?
+                        </div>
+                    </td>
+
+                    <td th:text="${question.difficulty}">MEDIUM</td>
+
+                    <td>
+                        <span th:if="${question.status.name() == 'ACTIVE'}" class="badge badge-green">
+                            ACTIVE
+                        </span>
+
+                        <span th:if="${question.status.name() == 'DRAFT'}" class="badge badge-gray">
+                            DRAFT
+                        </span>
+
+                        <span th:if="${question.status.name() == 'ARCHIVED'}" class="badge badge-gray">
+                            ARCHIVED
+                        </span>
+                    </td>
+
+                    <td th:text="${question.sortOrder}">0</td>
+
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-small"
+                               th:href="@{/admin/questions/{id}/edit(id=${question.id})}">
+                                Редагувати
+                            </a>
+
+                            <form th:if="${question.status.name() != 'ARCHIVED'}"
+                                  class="inline-form"
+                                  th:action="@{/admin/questions/{id}/archive(id=${question.id})}"
+                                  method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-danger" type="submit">
+                                    Архів
+                                </button>
+                            </form>
+
+                            <form th:if="${question.status.name() == 'ARCHIVED'}"
+                                  class="inline-form"
+                                  th:action="@{/admin/questions/{id}/activate(id=${question.id})}"
+                                  method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-primary" type="submit">
+                                    Активувати
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(questions)}">
+                    <td colspan="8">Поки немає жодного питання.</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

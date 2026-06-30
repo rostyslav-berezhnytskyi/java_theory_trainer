@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head(${pageTitle})}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('sections')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar(${pageTitle})}"></div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title" th:text="${pageTitle}">Розділ</h2>
+                <a class="btn" th:href="@{/admin/sections}">← До списку</a>
+            </div>
+
+            <form class="form"
+                  th:action="${section.id == null} ? @{/admin/sections} : @{/admin/sections/{id}(id=${section.id})}"
+                  th:object="${section}"
+                  method="post">
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="form-group">
+                    <label class="form-label" for="volumeId">Том</label>
+
+                    <select class="form-control" id="volumeId" name="volumeId" required>
+                        <option value="">-- Обери том --</option>
+
+                        <option th:each="volume : ${volumes}"
+                                th:value="${volume.id}"
+                                th:text="${volume.title}"
+                                th:selected="${section.volume != null && section.volume.id == volume.id}">
+                            Java Core
+                        </option>
+                    </select>
+
+                    <span class="form-help">
+                        Розділ обов'язково має належати до одного тому.
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="title">Назва</label>
+                    <input class="form-control"
+                           id="title"
+                           type="text"
+                           th:field="*{title}"
+                           placeholder="Наприклад: JVM, Memory"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="slug">Slug</label>
+                    <input class="form-control"
+                           id="slug"
+                           type="text"
+                           th:field="*{slug}"
+                           placeholder="Наприклад: jvm-memory">
+                    <span class="form-help">
+                        Можна залишити пустим — згенерується автоматично з назви.
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Опис</label>
+                    <textarea class="form-control"
+                              id="description"
+                              th:field="*{description}"
+                              rows="5"
+                              placeholder="Короткий опис розділу"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="sortOrder">Порядок</label>
+                    <input class="form-control"
+                           id="sortOrder"
+                           type="number"
+                           th:field="*{sortOrder}">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" th:field="*{active}">
+                        Активний
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Зберегти</button>
+                    <a class="btn" th:href="@{/admin/sections}">Скасувати</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>
