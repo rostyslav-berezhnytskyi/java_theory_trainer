@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Перегляд розділу')}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('sections')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Перегляд розділу')}"></div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title" th:text="${section.title}">JVM, Memory</h2>
+
+                <div class="actions">
+                    <a class="btn" th:href="@{/admin/sections}">← До списку</a>
+                    <a class="btn btn-primary"
+                       th:href="@{/admin/sections/{id}/edit(id=${section.id})}">
+                        Редагувати
+                    </a>
+                </div>
+            </div>
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <div class="meta-label">Том</div>
+                    <div class="meta-value" th:text="${section.volume.title}">Java Core</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">ID</div>
+                    <div class="meta-value" th:text="${section.id}">1</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Slug</div>
+                    <div class="meta-value" th:text="${section.slug}">jvm-memory</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Статус</div>
+                    <div class="meta-value" th:text="${section.active ? 'Активний' : 'Архів'}">Активний</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Порядок</div>
+                    <div class="meta-value" th:text="${section.sortOrder}">0</div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Опис</h3>
+                <div class="content-box" th:text="${section.description ?: '—'}"></div>
+            </div>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

@@ -7,6 +7,7 @@ import com.els.javatheorytrainer.enums.QuestionStatus;
 import com.els.javatheorytrainer.form.QuestionForm;
 import com.els.javatheorytrainer.repository.QuestionRepository;
 import com.els.javatheorytrainer.repository.SectionRepository;
+import com.els.javatheorytrainer.repository.VolumeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,15 +18,6 @@ import java.util.List;
 
 /**
  * Admin controller for managing questions.
- *
- * A question belongs to one section and contains:
- * - question text;
- * - short answer;
- * - full answer;
- * - hint;
- * - must-have points;
- * - common mistakes;
- * - tags and metadata.
  */
 @Controller
 @RequestMapping("/admin/questions")
@@ -34,10 +26,8 @@ public class AdminQuestionController {
 
     private final QuestionRepository questionRepository;
     private final SectionRepository sectionRepository;
+    private final VolumeRepository volumeRepository;
 
-    /**
-     * Shows all questions.
-     */
     @GetMapping
     public String list(Model model) {
         model.addAttribute("questions", questionRepository.findAllByOrderBySectionVolumeSortOrderAscSectionSortOrderAscSortOrderAscIdAsc());
@@ -45,12 +35,20 @@ public class AdminQuestionController {
     }
 
     /**
-     * Shows form for creating a new question.
+     * View page for one question.
      */
+    @GetMapping("/{id}")
+    public String view(@PathVariable Long id, Model model) {
+        Question question = findQuestion(id);
+        model.addAttribute("question", question);
+        return "admin/questions/view";
+    }
+
     @GetMapping("/new")
     public String createForm(Model model) {
         QuestionForm form = new QuestionForm();
 
+        model.addAttribute("question", null);
         model.addAttribute("questionForm", form);
         addFormOptions(model);
         model.addAttribute("pageTitle", "Нове питання");
@@ -58,9 +56,6 @@ public class AdminQuestionController {
         return "admin/questions/form";
     }
 
-    /**
-     * Saves a new question.
-     */
     @PostMapping
     public String create(@ModelAttribute QuestionForm form) {
         Section section = findSection(form.getSectionId());
@@ -73,15 +68,12 @@ public class AdminQuestionController {
         return "redirect:/admin/questions";
     }
 
-    /**
-     * Shows form for editing an existing question.
-     */
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         Question question = findQuestion(id);
-
         QuestionForm form = toForm(question);
 
+        model.addAttribute("question", question);
         model.addAttribute("questionForm", form);
         addFormOptions(model);
         model.addAttribute("pageTitle", "Редагувати питання");
@@ -89,9 +81,6 @@ public class AdminQuestionController {
         return "admin/questions/form";
     }
 
-    /**
-     * Updates an existing question.
-     */
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
                          @ModelAttribute QuestionForm form) {
@@ -100,15 +89,11 @@ public class AdminQuestionController {
         Section section = findSection(form.getSectionId());
 
         applyFormToQuestion(form, question, section);
-
         questionRepository.save(question);
 
         return "redirect:/admin/questions";
     }
 
-    /**
-     * Soft-archives question.
-     */
     @PostMapping("/{id}/archive")
     public String archive(@PathVariable Long id) {
         Question question = findQuestion(id);
@@ -118,9 +103,6 @@ public class AdminQuestionController {
         return "redirect:/admin/questions";
     }
 
-    /**
-     * Makes question active again.
-     */
     @PostMapping("/{id}/activate")
     public String activate(@PathVariable Long id) {
         Question question = findQuestion(id);
@@ -140,18 +122,13 @@ public class AdminQuestionController {
                 .orElseThrow(() -> new IllegalArgumentException("Section not found: " + id));
     }
 
-    /**
-     * Adds common select options to the form page.
-     */
     private void addFormOptions(Model model) {
+        model.addAttribute("volumes", volumeRepository.findAllByOrderBySortOrderAscTitleAsc());
         model.addAttribute("sections", sectionRepository.findAllByOrderByVolumeSortOrderAscSortOrderAscTitleAsc());
         model.addAttribute("difficulties", Difficulty.values());
         model.addAttribute("statuses", QuestionStatus.values());
     }
 
-    /**
-     * Copies form data into Question entity.
-     */
     private void applyFormToQuestion(QuestionForm form, Question question, Section section) {
         question.setSection(section);
         question.setQuestionText(form.getQuestionText());
@@ -171,13 +148,11 @@ public class AdminQuestionController {
         question.getCommonMistakes().addAll(splitMultilineText(form.getCommonMistakesText()));
     }
 
-    /**
-     * Converts Question entity to QuestionForm for editing.
-     */
     private QuestionForm toForm(Question question) {
         QuestionForm form = new QuestionForm();
 
         form.setId(question.getId());
+        form.setVolumeId(question.getSection().getVolume().getId());
         form.setSectionId(question.getSection().getId());
         form.setQuestionText(question.getQuestionText());
         form.setShortAnswer(question.getShortAnswer());
@@ -195,10 +170,6 @@ public class AdminQuestionController {
         return form;
     }
 
-    /**
-     * Splits textarea text into list.
-     * Empty lines are ignored.
-     */
     private List<String> splitMultilineText(String text) {
         if (text == null || text.isBlank()) {
             return List.of();
@@ -210,9 +181,6 @@ public class AdminQuestionController {
                 .toList();
     }
 
-    /**
-     * Converts list items back to textarea text.
-     */
     private String joinLines(List<String> lines) {
         if (lines == null || lines.isEmpty()) {
             return "";

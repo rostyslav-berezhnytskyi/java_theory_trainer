@@ -24,6 +24,16 @@ public class AdminVolumeController {
 
     private final VolumeRepository volumeRepository;
 
+    @GetMapping("/{id}")
+    public String view(@PathVariable Long id, Model model) {
+        Volume volume = volumeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Volume not found: " + id));
+
+        model.addAttribute("volume", volume);
+
+        return "admin/volumes/view";
+    }
+
     /**
      * Shows all volumes.
      */

@@ -30,6 +30,7 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/css/**",
                                 "/js/**",
+                                "/static/css/js/**",
                                 "/images/**",
                                 "/webjars/**"
                         ).permitAll()

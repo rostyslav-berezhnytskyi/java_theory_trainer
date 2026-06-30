@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Перегляд тому')}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('volumes')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Перегляд тому')}"></div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title" th:text="${volume.title}">Java Core</h2>
+
+                <div class="actions">
+                    <a class="btn" th:href="@{/admin/volumes}">← До списку</a>
+                    <a class="btn btn-primary"
+                       th:href="@{/admin/volumes/{id}/edit(id=${volume.id})}">
+                        Редагувати
+                    </a>
+                </div>
+            </div>
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <div class="meta-label">ID</div>
+                    <div class="meta-value" th:text="${volume.id}">1</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Slug</div>
+                    <div class="meta-value" th:text="${volume.slug}">java-core</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Статус</div>
+                    <div class="meta-value" th:text="${volume.active ? 'Активний' : 'Архів'}">Активний</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Порядок</div>
+                    <div class="meta-value" th:text="${volume.sortOrder}">0</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Створено</div>
+                    <div class="meta-value" th:text="${volume.createdAt}">—</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Оновлено</div>
+                    <div class="meta-value" th:text="${volume.updatedAt}">—</div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Опис</h3>
+                <div class="content-box" th:text="${volume.description ?: '—'}"></div>
+            </div>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Перегляд питання')}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('questions')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Перегляд питання')}"></div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Питання #<span th:text="${question.id}">1</span></h2>
+
+                <div class="actions">
+                    <a class="btn" th:href="@{/admin/questions}">← До списку</a>
+                    <a class="btn btn-primary"
+                       th:href="@{/admin/questions/{id}/edit(id=${question.id})}">
+                        Редагувати
+                    </a>
+                </div>
+            </div>
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <div class="meta-label">Том</div>
+                    <div class="meta-value" th:text="${question.section.volume.title}">Java Core</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Розділ</div>
+                    <div class="meta-value" th:text="${question.section.title}">JVM, Memory</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Статус</div>
+                    <div class="meta-value" th:text="${question.status}">ACTIVE</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Складність</div>
+                    <div class="meta-value" th:text="${question.difficulty}">MEDIUM</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Порядок</div>
+                    <div class="meta-value" th:text="${question.sortOrder}">0</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Джерело</div>
+                    <div class="meta-value" th:text="${question.sourceReference ?: '—'}">—</div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Питання</h3>
+                <div class="content-box" th:text="${question.questionText}"></div>
+            </div>
+
+            <div class="content-block" th:if="${!#lists.isEmpty(question.images)}">
+                <h3 class="content-block-title">Зображення до питання</h3>
+
+                <div class="image-grid">
+                    <div class="image-card"
+                         th:each="image : ${question.images}"
+                         th:if="${image.role.name() == 'QUESTION'}">
+
+                        <div class="image-card"
+                             th:each="image : ${question.images}"
+                             th:if="${image.role.name() == 'QUESTION'}">
+
+                            <a class="image-lightbox image-link"
+                               th:href="@{${image.imageUrl}}"
+                               data-gallery="question-images"
+                               th:data-title="${image.caption ?: 'Зображення до питання'}"
+                               th:data-description="${image.altText ?: ''}">
+
+                                <img class="image-preview"
+                                     th:src="@{${image.imageUrl}}"
+                                     th:alt="${image.altText ?: 'Question image'}">
+
+                                <span class="image-open-hint">Відкрити</span>
+                            </a>
+
+                            <div class="image-meta">
+                                <div class="image-caption"
+                                     th:if="${image.caption != null && !image.caption.isBlank()}"
+                                     th:text="${image.caption}">
+                                    Підпис
+                                </div>
+
+                                <div class="image-description"
+                                     th:if="${image.altText != null && !image.altText.isBlank()}"
+                                     th:text="${image.altText}">
+                                    Опис
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-meta" th:if="${image.caption != null && !image.caption.isBlank()}"
+                             th:text="${image.caption}">
+                            Caption
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Коротка відповідь</h3>
+                <div class="content-box" th:text="${question.shortAnswer ?: '—'}"></div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Повна відповідь</h3>
+                <div class="content-box" th:text="${question.fullAnswer ?: '—'}"></div>
+            </div>
+
+            <div class="content-block" th:if="${!#lists.isEmpty(question.images)}">
+                <h3 class="content-block-title">Зображення до відповіді</h3>
+
+                <div class="image-grid">
+                    <div class="image-card"
+                         th:each="image : ${question.images}"
+                         th:if="${image.role.name() == 'ANSWER'}">
+
+                        <div class="image-card"
+                             th:each="image : ${question.images}"
+                             th:if="${image.role.name() == 'ANSWER'}">
+
+                            <a class="image-lightbox image-link"
+                               th:href="@{${image.imageUrl}}"
+                               data-gallery="question-images"
+                               th:data-title="${image.caption ?: 'Зображення до відповіді'}"
+                               th:data-description="${image.altText ?: ''}">
+
+                                <img class="image-preview"
+                                     th:src="@{${image.imageUrl}}"
+                                     th:alt="${image.altText ?: 'Answer image'}">
+
+                                <span class="image-open-hint">Відкрити</span>
+                            </a>
+
+                            <div class="image-meta">
+                                <div class="image-caption"
+                                     th:if="${image.caption != null && !image.caption.isBlank()}"
+                                     th:text="${image.caption}">
+                                    Підпис
+                                </div>
+
+                                <div class="image-description"
+                                     th:if="${image.altText != null && !image.altText.isBlank()}"
+                                     th:text="${image.altText}">
+                                    Опис
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-meta" th:if="${image.caption != null && !image.caption.isBlank()}"
+                             th:text="${image.caption}">
+                            Caption
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Підказка</h3>
+                <div class="content-box" th:text="${question.hint ?: '—'}"></div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Must-have points</h3>
+
+                <ul class="list-clean" th:if="${!#lists.isEmpty(question.mustHavePoints)}">
+                    <li th:each="point : ${question.mustHavePoints}" th:text="${point}"></li>
+                </ul>
+
+                <div class="content-box" th:if="${#lists.isEmpty(question.mustHavePoints)}">—</div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Common mistakes</h3>
+
+                <ul class="list-clean" th:if="${!#lists.isEmpty(question.commonMistakes)}">
+                    <li th:each="mistake : ${question.commonMistakes}" th:text="${mistake}"></li>
+                </ul>
+
+                <div class="content-box" th:if="${#lists.isEmpty(question.commonMistakes)}">—</div>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Теги</h3>
+                <div class="content-box" th:text="${question.tags ?: '—'}"></div>
+            </div>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

@@ -24,18 +24,55 @@
 
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                <div class="form-group">
-                    <label class="form-label" for="sectionId">Розділ</label>
+                <div class="form-grid form-grid-2">
 
-                    <select class="form-control" id="sectionId" th:field="*{sectionId}" required>
-                        <option value="">-- Обери розділ --</option>
+                    <div class="form-group">
+                        <label class="form-label" for="volumeId">Том</label>
 
-                        <option th:each="section : ${sections}"
-                                th:value="${section.id}"
-                                th:text="${section.volume.title + ' / ' + section.title}">
-                            Java Core / JVM, Memory
-                        </option>
-                    </select>
+                        <select class="form-control"
+                                id="volumeId"
+                                th:field="*{volumeId}"
+                                data-volume-select
+                                data-placeholder="Почни вводити назву тому..."
+                                required>
+                            <option value=""></option>
+
+                            <option th:each="volume : ${volumes}"
+                                    th:value="${volume.id}"
+                                    th:text="${volume.title}">
+                                Java Core
+                            </option>
+                        </select>
+
+                        <span class="form-help">
+            Обери том. Можна просто почати вводити назву.
+        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sectionId">Розділ</label>
+
+                        <select class="form-control"
+                                id="sectionId"
+                                th:field="*{sectionId}"
+                                data-section-select
+                                data-placeholder="Почни вводити назву розділу..."
+                                required>
+                            <option value=""></option>
+
+                            <option th:each="section : ${sections}"
+                                    th:value="${section.id}"
+                                    th:data-volume-id="${section.volume.id}"
+                                    th:text="${section.title}">
+                                JVM, Memory
+                            </option>
+                        </select>
+
+                        <span class="form-help">
+            Спочатку обери том, потім розділ. Розділи автоматично фільтруються.
+        </span>
+                    </div>
+
                 </div>
 
                 <div class="form-group">
@@ -151,9 +188,142 @@
                     <a class="btn" th:href="@{/admin/questions}">Скасувати</a>
                 </div>
             </form>
+            <div th:if="${questionForm.id != null}" class="image-manager">
+
+                <hr class="section-divider">
+
+                <h3>Зображення питання</h3>
+
+                <form th:action="@{/admin/questions/{questionId}/images(questionId=${questionForm.id})}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="upload-form">
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Файл</label>
+                            <input class="form-control" type="file" name="file" accept="image/*" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Де показувати</label>
+                            <select class="form-control" name="role" required>
+                                <option value="QUESTION">У питанні</option>
+                                <option value="ANSWER">У відповіді</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Alt text</label>
+                            <input class="form-control"
+                                   type="text"
+                                   name="altText"
+                                   placeholder="Наприклад: JVM memory diagram">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Порядок</label>
+                            <input class="form-control"
+                                   type="number"
+                                   name="sortOrder"
+                                   value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Підпис</label>
+                        <input class="form-control"
+                               type="text"
+                               name="caption"
+                               placeholder="Короткий підпис під зображенням">
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Завантажити зображення</button>
+                </form>
+
+                <div class="image-grid" th:if="${question != null && !#lists.isEmpty(question.images)}">
+                    <div class="image-card" th:each="image : ${question.images}">
+                        <div class="image-card" th:each="image : ${question.images}">
+
+                            <a class="image-lightbox image-link"
+                               th:href="@{${image.imageUrl}}"
+                               data-gallery="question-edit-images"
+                               th:data-title="${image.caption ?: image.role}"
+                               th:data-description="${image.altText ?: ''}">
+
+                                <img class="image-preview"
+                                     th:src="@{${image.imageUrl}}"
+                                     th:alt="${image.altText ?: 'Question image'}">
+
+                                <span class="image-open-hint">Відкрити</span>
+                            </a>
+
+                            <div class="image-meta">
+                                <div>
+                                    <strong th:text="${image.role}">QUESTION</strong>
+                                    <span th:text="'#' + ${image.sortOrder}">#0</span>
+                                </div>
+
+                                <div class="image-caption"
+                                     th:if="${image.caption != null && !image.caption.isBlank()}"
+                                     th:text="${image.caption}">
+                                    Caption
+                                </div>
+
+                                <div class="image-description"
+                                     th:if="${image.altText != null && !image.altText.isBlank()}"
+                                     th:text="${image.altText}">
+                                    Description
+                                </div>
+                            </div>
+
+                            <form th:action="@{/admin/questions/{questionId}/images/{imageId}/delete(questionId=${questionForm.id}, imageId=${image.id})}"
+                                  method="post"
+                                  class="inline-form">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+                            </form>
+                        </div>
+
+                        <div class="image-meta">
+                            <div>
+                                <strong th:text="${image.role}">QUESTION</strong>
+                                <span th:text="'#' + ${image.sortOrder}">#0</span>
+                            </div>
+
+                            <div th:if="${image.caption != null && !image.caption.isBlank()}"
+                                 th:text="${image.caption}">
+                                Caption
+                            </div>
+                        </div>
+
+                        <form th:action="@{/admin/questions/{questionId}/images/{imageId}/delete(questionId=${questionForm.id}, imageId=${image.id})}"
+                              method="post"
+                              class="inline-form">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button class="btn btn-small btn-danger" type="submit">Видалити</button>
+                        </form>
+                    </div>
+                </div>
+
+                <p class="form-help" th:if="${question == null || #lists.isEmpty(question.images)}">
+                    Поки немає зображень для цього питання.
+                </p>
+            </div>
+
+            <div th:if="${questionForm.id == null}" class="form-help">
+                Зображення можна буде додати після першого збереження питання.
+            </div>
         </section>
     </main>
 
 </div>
+
+
+
 </body>
 </html>

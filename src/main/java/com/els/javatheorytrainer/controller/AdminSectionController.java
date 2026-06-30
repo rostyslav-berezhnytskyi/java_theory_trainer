@@ -27,6 +27,16 @@ public class AdminSectionController {
     private final SectionRepository sectionRepository;
     private final VolumeRepository volumeRepository;
 
+    @GetMapping("/{id}")
+    public String view(@PathVariable Long id, Model model) {
+        Section section = sectionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Section not found: " + id));
+
+        model.addAttribute("section", section);
+
+        return "admin/sections/view";
+    }
+
     /**
      * Shows all sections.
      */

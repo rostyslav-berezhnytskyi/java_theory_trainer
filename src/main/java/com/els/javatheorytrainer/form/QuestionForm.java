@@ -8,10 +8,6 @@ import lombok.Setter;
 
 /**
  * Form object for creating and editing questions.
- *
- * We use this class instead of binding HTML form directly to Question entity.
- * It keeps form processing simple, especially for multiline fields like
- * must-have points and common mistakes.
  */
 @Getter
 @Setter
@@ -20,6 +16,16 @@ public class QuestionForm {
 
     private Long id;
 
+    /**
+     * Selected volume.
+     * Used only by UI to filter sections.
+     */
+    private Long volumeId;
+
+    /**
+     * Selected section.
+     * This is the real relation used for Question entity.
+     */
     private Long sectionId;
 
     private String questionText;
@@ -30,16 +36,8 @@ public class QuestionForm {
 
     private String hint;
 
-    /**
-     * Multiline text.
-     * Each line will become one item in Question.mustHavePoints.
-     */
     private String mustHavePointsText;
 
-    /**
-     * Multiline text.
-     * Each line will become one item in Question.commonMistakes.
-     */
     private String commonMistakesText;
 
     private String tags;

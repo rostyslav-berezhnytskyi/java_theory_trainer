@@ -27,8 +27,13 @@
                 <div class="form-group">
                     <label class="form-label" for="volumeId">Том</label>
 
-                    <select class="form-control" id="volumeId" name="volumeId" required>
-                        <option value="">-- Обери том --</option>
+                    <select class="form-control"
+                            id="volumeId"
+                            name="volumeId"
+                            data-basic-select
+                            data-placeholder="Почни вводити назву тому..."
+                            required>
+                        <option value=""></option>
 
                         <option th:each="volume : ${volumes}"
                                 th:value="${volume.id}"
