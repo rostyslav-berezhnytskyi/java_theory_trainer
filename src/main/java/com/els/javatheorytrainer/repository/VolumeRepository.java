@@ -1,0 +1,11 @@
+package com.els.javatheorytrainer.repository;
+
+import com.els.javatheorytrainer.entity.Volume;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface VolumeRepository extends JpaRepository<Volume, Long> {
+
+    List<Volume> findAllByOrderBySortOrderAscTitleAsc();
+}
