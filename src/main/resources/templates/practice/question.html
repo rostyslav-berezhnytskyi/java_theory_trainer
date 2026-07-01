@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{admin/fragments/layout :: head('Питання')}"></head>
+
+<body>
+<div class="app-shell">
+
+    <div th:replace="~{admin/fragments/layout :: sidebar('practice')}"></div>
+
+    <main class="main">
+        <div th:replace="~{admin/fragments/layout :: topbar('Тренування')}"></div>
+
+        <section class="card practice-card">
+
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Питання</h2>
+                    <div class="practice-meta">
+                        <span th:text="${question.section.volume.title}">Java Core</span>
+                        <span> / </span>
+                        <span th:text="${question.section.title}">JVM</span>
+                        <span> · </span>
+                        <span th:text="${question.difficulty}">MEDIUM</span>
+                    </div>
+                </div>
+
+                <a class="btn" th:href="@{/practice/start}">
+                    Змінити розділ
+                </a>
+            </div>
+
+            <div class="content-block">
+                <h3 class="content-block-title">Питання</h3>
+                <div class="content-box practice-question-text" th:text="${question.questionText}">
+                    Що таке JVM?
+                </div>
+            </div>
+
+            <div class="content-block" th:if="${!#lists.isEmpty(question.images)}">
+                <h3 class="content-block-title">Зображення до питання</h3>
+
+                <div class="image-grid">
+                    <div class="image-card"
+                         th:each="image : ${question.images}"
+                         th:if="${image.role.name() == 'QUESTION'}">
+
+                        <a class="image-lightbox image-link"
+                           th:href="@{${image.imageUrl}}"
+                           data-gallery="practice-question-images"
+                           th:data-title="${image.caption ?: 'Зображення до питання'}"
+                           th:data-description="${image.altText ?: ''}">
+
+                            <img class="image-preview"
+                                 th:src="@{${image.imageUrl}}"
+                                 th:alt="${image.altText ?: 'Question image'}">
+
+                            <span class="image-open-hint">Відкрити</span>
+                        </a>
+
+                        <div class="image-meta">
+                            <div class="image-caption"
+                                 th:if="${image.caption != null && !image.caption.isBlank()}"
+                                 th:text="${image.caption}">
+                                Caption
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${!showAnswer}" class="practice-actions">
+                <a class="btn btn-primary btn-large"
+                   th:href="@{/practice/questions/{id}(id=${question.id}, answer=true)}">
+                    Показати відповідь
+                </a>
+            </div>
+
+            <div th:if="${showAnswer}">
+
+                <div class="content-block">
+                    <h3 class="content-block-title">Коротка відповідь</h3>
+                    <div class="content-box" th:text="${question.shortAnswer ?: '—'}"></div>
+                </div>
+
+                <div class="content-block">
+                    <h3 class="content-block-title">Повна відповідь</h3>
+                    <div class="content-box" th:text="${question.fullAnswer ?: '—'}"></div>
+                </div>
+
+                <div class="content-block" th:if="${!#lists.isEmpty(question.images)}">
+                    <h3 class="content-block-title">Зображення до відповіді</h3>
+
+                    <div class="image-grid">
+                        <div class="image-card"
+                             th:each="image : ${question.images}"
+                             th:if="${image.role.name() == 'ANSWER'}">
+
+                            <a class="image-lightbox image-link"
+                               th:href="@{${image.imageUrl}}"
+                               data-gallery="practice-answer-images"
+                               th:data-title="${image.caption ?: 'Зображення до відповіді'}"
+                               th:data-description="${image.altText ?: ''}">
+
+                                <img class="image-preview"
+                                     th:src="@{${image.imageUrl}}"
+                                     th:alt="${image.altText ?: 'Answer image'}">
+
+                                <span class="image-open-hint">Відкрити</span>
+                            </a>
+
+                            <div class="image-meta">
+                                <div class="image-caption"
+                                     th:if="${image.caption != null && !image.caption.isBlank()}"
+                                     th:text="${image.caption}">
+                                    Caption
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-block" th:if="${question.hint != null && !question.hint.isBlank()}">
+                    <h3 class="content-block-title">Підказка</h3>
+                    <div class="content-box" th:text="${question.hint}"></div>
+                </div>
+
+                <div class="practice-grade-block">
+                    <h3>Як ти відповів?</h3>
+
+                    <form class="grade-grid"
+                          th:action="@{/practice/questions/{id}/grade(id=${question.id})}"
+                          method="post">
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                        <button class="btn btn-danger" name="grade" value="AGAIN" type="submit">
+                            Again
+                        </button>
+
+                        <button class="btn btn-secondary" name="grade" value="HARD" type="submit">
+                            Hard
+                        </button>
+
+                        <button class="btn btn-primary" name="grade" value="GOOD" type="submit">
+                            Good
+                        </button>
+
+                        <button class="btn btn-primary" name="grade" value="EASY" type="submit">
+                            Easy
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

@@ -13,4 +13,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findBySectionIdOrderBySortOrderAscIdAsc(Long sectionId);
 
     List<Question> findByStatusOrderBySectionSortOrderAscSortOrderAscIdAsc(QuestionStatus status);
+
+    List<Question> findByStatusAndSectionId(QuestionStatus status, Long sectionId);
 }

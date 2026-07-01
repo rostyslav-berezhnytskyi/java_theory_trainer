@@ -51,6 +51,12 @@
            th:classappend="${activePage == 'questions'} ? ' active'">
             Питання
         </a>
+
+        <a th:href="@{/practice/start}"
+           class="sidebar-link"
+           th:classappend="${activePage == 'practice'} ? ' active'">
+            Тренування
+        </a>
     </nav>
 </aside>
 

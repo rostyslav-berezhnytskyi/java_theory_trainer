@@ -802,3 +802,71 @@ textarea.form-control {
     font-size: 14px;
     line-height: 1.45;
 }
+
+.practice-card {
+    max-width: 1100px;
+}
+
+.practice-meta {
+    margin-top: 6px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.practice-question-text {
+    font-size: 20px;
+    line-height: 1.55;
+    font-weight: 600;
+}
+
+.practice-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+.btn-large {
+    padding: 14px 22px;
+    font-size: 16px;
+}
+
+.practice-grade-block {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.grade-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.alert {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+@media (max-width: 900px) {
+    .practice-question-text {
+        font-size: 18px;
+    }
+
+    .grade-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .grade-grid {
+        grid-template-columns: 1fr;
+    }
+}

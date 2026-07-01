@@ -30,11 +30,11 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/css/**",
                                 "/js/**",
-                                "/static/css/js/**",
+                                "/static/js/**",
                                 "/images/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers("/admin/**").authenticated()
+                        .requestMatchers("/admin/**", "/practice/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(Customizer.withDefaults())
