@@ -1,14 +1,19 @@
 package com.els.javatheorytrainer.controller;
 
 import com.els.javatheorytrainer.entity.Question;
+import com.els.javatheorytrainer.entity.QuestionImage;
+import com.els.javatheorytrainer.enums.ImageRole;
 import com.els.javatheorytrainer.enums.PracticeGrade;
 import com.els.javatheorytrainer.repository.SectionRepository;
 import com.els.javatheorytrainer.repository.VolumeRepository;
+import com.els.javatheorytrainer.service.MarkdownService;
 import com.els.javatheorytrainer.service.PracticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Controller for practice mode.
@@ -21,6 +26,7 @@ public class PracticeController {
     private final PracticeService practiceService;
     private final VolumeRepository volumeRepository;
     private final SectionRepository sectionRepository;
+    private final MarkdownService markdownService;
 
     @GetMapping({"", "/start"})
     public String startPage(Model model) {
@@ -51,6 +57,14 @@ public class PracticeController {
         model.addAttribute("showAnswer", answer);
         model.addAttribute("grades", PracticeGrade.values());
 
+        model.addAttribute("shortAnswerHtml", markdownService.toHtml(question.getShortAnswer()));
+        model.addAttribute("fullAnswerHtml", markdownService.toHtml(question.getFullAnswer()));
+        model.addAttribute("hintHtml", markdownService.toHtml(question.getHint()));
+        model.addAttribute("theoryNotesHtml", markdownService.toHtml(question.getTheoryNotes()));
+
+        model.addAttribute("questionImages", imagesByRole(question, ImageRole.QUESTION));
+        model.addAttribute("answerImages", imagesByRole(question, ImageRole.ANSWER));
+
         return "practice/question";
     }
 
@@ -71,5 +85,11 @@ public class PracticeController {
     private void addStartPageData(Model model) {
         model.addAttribute("volumes", volumeRepository.findAllByOrderBySortOrderAscTitleAsc());
         model.addAttribute("sections", sectionRepository.findAllByOrderByVolumeSortOrderAscSortOrderAscTitleAsc());
+    }
+
+    private List<QuestionImage> imagesByRole(Question question, ImageRole role) {
+        return question.getImages().stream()
+                .filter(image -> image.getRole() == role)
+                .toList();
     }
 }

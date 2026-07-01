@@ -63,6 +63,15 @@ public class Question {
     private String fullAnswer;
 
     /**
+     * Optional deep theory notes.
+     *
+     * This field is for long explanations from your notes.
+     * It is not required for every question.
+     */
+    @Column(columnDefinition = "text")
+    private String theoryNotes;
+
+    /**
      * Optional hint shown when you do not know the answer.
      */
     @Column(columnDefinition = "text")

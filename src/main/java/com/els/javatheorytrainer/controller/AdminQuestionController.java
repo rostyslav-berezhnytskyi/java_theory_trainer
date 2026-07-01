@@ -1,13 +1,16 @@
 package com.els.javatheorytrainer.controller;
 
 import com.els.javatheorytrainer.entity.Question;
+import com.els.javatheorytrainer.entity.QuestionImage;
 import com.els.javatheorytrainer.entity.Section;
 import com.els.javatheorytrainer.enums.Difficulty;
+import com.els.javatheorytrainer.enums.ImageRole;
 import com.els.javatheorytrainer.enums.QuestionStatus;
 import com.els.javatheorytrainer.form.QuestionForm;
 import com.els.javatheorytrainer.repository.QuestionRepository;
 import com.els.javatheorytrainer.repository.SectionRepository;
 import com.els.javatheorytrainer.repository.VolumeRepository;
+import com.els.javatheorytrainer.service.MarkdownService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +30,7 @@ public class AdminQuestionController {
     private final QuestionRepository questionRepository;
     private final SectionRepository sectionRepository;
     private final VolumeRepository volumeRepository;
+    private final MarkdownService markdownService;
 
     @GetMapping
     public String list(Model model) {
@@ -39,8 +43,19 @@ public class AdminQuestionController {
      */
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
-        Question question = findQuestion(id);
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found: " + id));
+
         model.addAttribute("question", question);
+
+        model.addAttribute("shortAnswerHtml", markdownService.toHtml(question.getShortAnswer()));
+        model.addAttribute("fullAnswerHtml", markdownService.toHtml(question.getFullAnswer()));
+        model.addAttribute("hintHtml", markdownService.toHtml(question.getHint()));
+        model.addAttribute("theoryNotesHtml", markdownService.toHtml(question.getTheoryNotes()));
+
+        model.addAttribute("questionImages", imagesByRole(question, ImageRole.QUESTION));
+        model.addAttribute("answerImages", imagesByRole(question, ImageRole.ANSWER));
+
         return "admin/questions/view";
     }
 
@@ -62,6 +77,7 @@ public class AdminQuestionController {
 
         Question question = new Question();
         applyFormToQuestion(form, question, section);
+        question.setSortOrder(questionRepository.findMaxSortOrderBySectionId(section.getId()) + 10);
 
         questionRepository.save(question);
 
@@ -134,12 +150,12 @@ public class AdminQuestionController {
         question.setQuestionText(form.getQuestionText());
         question.setShortAnswer(form.getShortAnswer());
         question.setFullAnswer(form.getFullAnswer());
+        question.setTheoryNotes(form.getTheoryNotes());
         question.setHint(form.getHint());
         question.setTags(form.getTags());
         question.setSourceReference(form.getSourceReference());
         question.setDifficulty(form.getDifficulty());
         question.setStatus(form.getStatus());
-        question.setSortOrder(form.getSortOrder());
 
         question.getMustHavePoints().clear();
         question.getMustHavePoints().addAll(splitMultilineText(form.getMustHavePointsText()));
@@ -157,6 +173,7 @@ public class AdminQuestionController {
         form.setQuestionText(question.getQuestionText());
         form.setShortAnswer(question.getShortAnswer());
         form.setFullAnswer(question.getFullAnswer());
+        form.setTheoryNotes(question.getTheoryNotes());
         form.setHint(question.getHint());
         form.setTags(question.getTags());
         form.setSourceReference(question.getSourceReference());
@@ -187,5 +204,11 @@ public class AdminQuestionController {
         }
 
         return String.join(System.lineSeparator(), lines);
+    }
+
+    private List<QuestionImage> imagesByRole(Question question, ImageRole role) {
+        return question.getImages().stream()
+                .filter(image -> image.getRole() == role)
+                .toList();
     }
 }

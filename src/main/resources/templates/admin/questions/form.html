@@ -104,6 +104,18 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label" for="theoryNotes">Додаткова теорія / нотатки</label>
+                    <textarea class="form-control"
+                              id="theoryNotes"
+                              th:field="*{theoryNotes}"
+                              rows="12"
+                              placeholder="Велика теорія з конспекту, детальні пояснення, нюанси, приклади. Можна писати Markdown."></textarea>
+                    <span class="form-help">
+                        Це необов'язкове поле. Його краще використовувати для великих пояснень, які не є відповіддю на співбесіді.
+                    </span>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label" for="hint">Підказка</label>
                     <textarea class="form-control"
                               id="hint"
@@ -154,14 +166,6 @@
                                 DRAFT
                             </option>
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="sortOrder">Порядок</label>
-                        <input class="form-control"
-                               id="sortOrder"
-                               type="number"
-                               th:field="*{sortOrder}">
                     </div>
                 </div>
 
@@ -223,14 +227,6 @@
                                    type="text"
                                    name="altText"
                                    placeholder="Наприклад: JVM memory diagram">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Порядок</label>
-                            <input class="form-control"
-                                   type="number"
-                                   name="sortOrder"
-                                   value="0">
                         </div>
                     </div>
 

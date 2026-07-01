@@ -63,6 +63,11 @@ public class AdminVolumeController {
     @PostMapping
     public String create(@ModelAttribute Volume volume) {
         prepareVolumeBeforeSave(volume);
+
+        if (volume.getSortOrder() <= 0) {
+            volume.setSortOrder(volumeRepository.findMaxSortOrder() + 10);
+        }
+
         volumeRepository.save(volume);
 
         return "redirect:/admin/volumes";
@@ -93,7 +98,6 @@ public class AdminVolumeController {
         volume.setTitle(formVolume.getTitle());
         volume.setSlug(formVolume.getSlug());
         volume.setDescription(formVolume.getDescription());
-        volume.setSortOrder(formVolume.getSortOrder());
         volume.setActive(formVolume.isActive());
 
         prepareVolumeBeforeSave(volume);

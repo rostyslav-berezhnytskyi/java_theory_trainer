@@ -61,49 +61,37 @@
                 <div class="content-box" th:text="${question.questionText}"></div>
             </div>
 
-            <div class="content-block" th:if="${!#lists.isEmpty(question.images)}">
+            <div class="content-block" th:if="${!#lists.isEmpty(questionImages)}">
                 <h3 class="content-block-title">Зображення до питання</h3>
 
                 <div class="image-grid">
-                    <div class="image-card"
-                         th:each="image : ${question.images}"
-                         th:if="${image.role.name() == 'QUESTION'}">
+                    <div class="image-card" th:each="image : ${questionImages}">
 
-                        <div class="image-card"
-                             th:each="image : ${question.images}"
-                             th:if="${image.role.name() == 'QUESTION'}">
+                        <a class="image-lightbox image-link"
+                           th:href="@{${image.imageUrl}}"
+                           data-gallery="question-images"
+                           th:data-title="${image.caption ?: 'Зображення до питання'}"
+                           th:data-description="${image.altText ?: ''}">
 
-                            <a class="image-lightbox image-link"
-                               th:href="@{${image.imageUrl}}"
-                               data-gallery="question-images"
-                               th:data-title="${image.caption ?: 'Зображення до питання'}"
-                               th:data-description="${image.altText ?: ''}">
+                            <img class="image-preview"
+                                 th:src="@{${image.imageUrl}}"
+                                 th:alt="${image.altText ?: 'Question image'}">
 
-                                <img class="image-preview"
-                                     th:src="@{${image.imageUrl}}"
-                                     th:alt="${image.altText ?: 'Question image'}">
+                            <span class="image-open-hint">Відкрити</span>
+                        </a>
 
-                                <span class="image-open-hint">Відкрити</span>
-                            </a>
-
-                            <div class="image-meta">
-                                <div class="image-caption"
-                                     th:if="${image.caption != null && !image.caption.isBlank()}"
-                                     th:text="${image.caption}">
-                                    Підпис
-                                </div>
-
-                                <div class="image-description"
-                                     th:if="${image.altText != null && !image.altText.isBlank()}"
-                                     th:text="${image.altText}">
-                                    Опис
-                                </div>
+                        <div class="image-meta">
+                            <div class="image-caption"
+                                 th:if="${image.caption != null && !image.caption.isBlank()}"
+                                 th:text="${image.caption}">
+                                Підпис
                             </div>
-                        </div>
 
-                        <div class="image-meta" th:if="${image.caption != null && !image.caption.isBlank()}"
-                             th:text="${image.caption}">
-                            Caption
+                            <div class="image-description"
+                                 th:if="${image.altText != null && !image.altText.isBlank()}"
+                                 th:text="${image.altText}">
+                                Опис
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -111,57 +99,77 @@
 
             <div class="content-block">
                 <h3 class="content-block-title">Коротка відповідь</h3>
-                <div class="content-box" th:text="${question.shortAnswer ?: '—'}"></div>
+
+                <div class="content-box markdown-content"
+                     th:if="${shortAnswerHtml != null && !shortAnswerHtml.isBlank()}"
+                     th:utext="${shortAnswerHtml}">
+                </div>
+
+                <div class="content-box"
+                     th:if="${shortAnswerHtml == null || shortAnswerHtml.isBlank()}">
+                    —
+                </div>
             </div>
 
             <div class="content-block">
                 <h3 class="content-block-title">Повна відповідь</h3>
-                <div class="content-box" th:text="${question.fullAnswer ?: '—'}"></div>
+
+                <div class="content-box markdown-content"
+                     th:if="${fullAnswerHtml != null && !fullAnswerHtml.isBlank()}"
+                     th:utext="${fullAnswerHtml}">
+                </div>
+
+                <div class="content-box"
+                     th:if="${fullAnswerHtml == null || fullAnswerHtml.isBlank()}">
+                    —
+                </div>
             </div>
 
-            <div class="content-block" th:if="${!#lists.isEmpty(question.images)}">
+            <div class="content-block"
+                 th:if="${theoryNotesHtml != null && !theoryNotesHtml.isBlank()}">
+
+                <h3 class="content-block-title">Додаткова теорія</h3>
+
+                <details class="details-box">
+                    <summary>Показати теорію</summary>
+
+                    <div class="content-box markdown-content"
+                         th:utext="${theoryNotesHtml}">
+                    </div>
+                </details>
+            </div>
+
+            <div class="content-block" th:if="${!#lists.isEmpty(answerImages)}">
                 <h3 class="content-block-title">Зображення до відповіді</h3>
 
                 <div class="image-grid">
-                    <div class="image-card"
-                         th:each="image : ${question.images}"
-                         th:if="${image.role.name() == 'ANSWER'}">
+                    <div class="image-card" th:each="image : ${answerImages}">
 
-                        <div class="image-card"
-                             th:each="image : ${question.images}"
-                             th:if="${image.role.name() == 'ANSWER'}">
+                        <a class="image-lightbox image-link"
+                           th:href="@{${image.imageUrl}}"
+                           data-gallery="answer-images"
+                           th:data-title="${image.caption ?: 'Зображення до відповіді'}"
+                           th:data-description="${image.altText ?: ''}">
 
-                            <a class="image-lightbox image-link"
-                               th:href="@{${image.imageUrl}}"
-                               data-gallery="question-images"
-                               th:data-title="${image.caption ?: 'Зображення до відповіді'}"
-                               th:data-description="${image.altText ?: ''}">
+                            <img class="image-preview"
+                                 th:src="@{${image.imageUrl}}"
+                                 th:alt="${image.altText ?: 'Answer image'}">
 
-                                <img class="image-preview"
-                                     th:src="@{${image.imageUrl}}"
-                                     th:alt="${image.altText ?: 'Answer image'}">
+                            <span class="image-open-hint">Відкрити</span>
+                        </a>
 
-                                <span class="image-open-hint">Відкрити</span>
-                            </a>
-
-                            <div class="image-meta">
-                                <div class="image-caption"
-                                     th:if="${image.caption != null && !image.caption.isBlank()}"
-                                     th:text="${image.caption}">
-                                    Підпис
-                                </div>
-
-                                <div class="image-description"
-                                     th:if="${image.altText != null && !image.altText.isBlank()}"
-                                     th:text="${image.altText}">
-                                    Опис
-                                </div>
+                        <div class="image-meta">
+                            <div class="image-caption"
+                                 th:if="${image.caption != null && !image.caption.isBlank()}"
+                                 th:text="${image.caption}">
+                                Підпис
                             </div>
-                        </div>
 
-                        <div class="image-meta" th:if="${image.caption != null && !image.caption.isBlank()}"
-                             th:text="${image.caption}">
-                            Caption
+                            <div class="image-description"
+                                 th:if="${image.altText != null && !image.altText.isBlank()}"
+                                 th:text="${image.altText}">
+                                Опис
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -169,7 +177,21 @@
 
             <div class="content-block">
                 <h3 class="content-block-title">Підказка</h3>
-                <div class="content-box" th:text="${question.hint ?: '—'}"></div>
+
+                <div class="content-box markdown-content"
+                     th:if="${hintHtml != null && !hintHtml.isBlank()}"
+                     th:utext="${hintHtml}">
+                </div>
+
+                <div class="content-box"
+                     th:if="${hintHtml == null || hintHtml.isBlank()}">
+                    —
+                </div>
+            </div>
+
+            <div class="content-box"
+                 th:if="${hintHtml == null || hintHtml.isBlank()}">
+                —
             </div>
 
             <div class="content-block">

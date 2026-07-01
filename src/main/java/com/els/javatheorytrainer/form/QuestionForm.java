@@ -34,6 +34,8 @@ public class QuestionForm {
 
     private String fullAnswer;
 
+    private String theoryNotes;
+
     private String hint;
 
     private String mustHavePointsText;

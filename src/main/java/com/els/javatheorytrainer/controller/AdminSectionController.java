@@ -77,6 +77,10 @@ public class AdminSectionController {
         section.setVolume(volume);
         prepareSectionBeforeSave(section);
 
+        if (section.getSortOrder() <= 0) {
+            section.setSortOrder(sectionRepository.findMaxSortOrderByVolumeId(volumeId) + 10);
+        }
+
         sectionRepository.save(section);
 
         return "redirect:/admin/sections";
@@ -115,7 +119,6 @@ public class AdminSectionController {
         section.setTitle(formSection.getTitle());
         section.setSlug(formSection.getSlug());
         section.setDescription(formSection.getDescription());
-        section.setSortOrder(formSection.getSortOrder());
         section.setActive(formSection.isActive());
 
         prepareSectionBeforeSave(section);
