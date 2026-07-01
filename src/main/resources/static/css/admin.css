@@ -819,6 +819,15 @@ textarea.form-control {
     font-weight: 600;
 }
 
+.practice-answer-input {
+    min-height: 220px;
+}
+
+.user-answer-box {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
 .practice-actions {
     display: flex;
     justify-content: center;

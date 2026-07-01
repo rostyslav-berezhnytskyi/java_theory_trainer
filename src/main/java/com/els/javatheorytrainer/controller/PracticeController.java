@@ -1,5 +1,6 @@
 package com.els.javatheorytrainer.controller;
 
+import com.els.javatheorytrainer.entity.PracticeAttempt;
 import com.els.javatheorytrainer.entity.Question;
 import com.els.javatheorytrainer.entity.QuestionImage;
 import com.els.javatheorytrainer.enums.ImageRole;
@@ -15,9 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller for practice mode.
- */
 @Controller
 @RequestMapping("/practice")
 @RequiredArgsConstructor
@@ -48,31 +46,42 @@ public class PracticeController {
 
     @GetMapping("/questions/{id}")
     public String questionPage(@PathVariable Long id,
-                               @RequestParam(defaultValue = "false") boolean answer,
+                               @RequestParam(required = false) Long attemptId,
                                Model model) {
 
         Question question = practiceService.findQuestionForPractice(id);
+        PracticeAttempt attempt = attemptId == null ? null : practiceService.findAttempt(attemptId);
+        if (attempt != null && !attempt.getQuestion().getId().equals(question.getId())) {
+            throw new IllegalArgumentException("Practice attempt does not belong to question: " + id);
+        }
 
-        model.addAttribute("question", question);
-        model.addAttribute("showAnswer", answer);
-        model.addAttribute("grades", PracticeGrade.values());
-
-        model.addAttribute("shortAnswerHtml", markdownService.toHtml(question.getShortAnswer()));
-        model.addAttribute("fullAnswerHtml", markdownService.toHtml(question.getFullAnswer()));
-        model.addAttribute("hintHtml", markdownService.toHtml(question.getHint()));
-        model.addAttribute("theoryNotesHtml", markdownService.toHtml(question.getTheoryNotes()));
-
-        model.addAttribute("questionImages", imagesByRole(question, ImageRole.QUESTION));
-        model.addAttribute("answerImages", imagesByRole(question, ImageRole.ANSWER));
+        addQuestionPageData(model, question, attempt);
 
         return "practice/question";
     }
 
-    @PostMapping("/questions/{id}/grade")
-    public String submitGrade(@PathVariable Long id,
+    @PostMapping("/questions/{id}/answer")
+    public String submitAnswer(@PathVariable Long id,
+                               @RequestParam String userAnswer,
+                               Model model) {
+        try {
+            PracticeAttempt attempt = practiceService.submitAnswer(id, userAnswer);
+            return "redirect:/practice/questions/" + id + "?attemptId=" + attempt.getId();
+        } catch (IllegalArgumentException e) {
+            Question question = practiceService.findQuestionForPractice(id);
+            addQuestionPageData(model, question, null);
+            model.addAttribute("answerError", "Відповідь не може бути порожньою.");
+            model.addAttribute("userAnswer", userAnswer);
+            return "practice/question";
+        }
+    }
+
+    @PostMapping("/attempts/{attemptId}/grade")
+    public String submitGrade(@PathVariable Long attemptId,
                               @RequestParam PracticeGrade grade) {
 
-        Question answeredQuestion = practiceService.submitGrade(id, grade);
+        PracticeAttempt attempt = practiceService.submitGrade(attemptId, grade);
+        Question answeredQuestion = attempt.getQuestion();
 
         Question nextQuestion = practiceService.pickNextQuestion(
                 answeredQuestion.getSection().getId(),
@@ -85,6 +94,21 @@ public class PracticeController {
     private void addStartPageData(Model model) {
         model.addAttribute("volumes", volumeRepository.findAllByOrderBySortOrderAscTitleAsc());
         model.addAttribute("sections", sectionRepository.findAllByOrderByVolumeSortOrderAscSortOrderAscTitleAsc());
+    }
+
+    private void addQuestionPageData(Model model, Question question, PracticeAttempt attempt) {
+        model.addAttribute("question", question);
+        model.addAttribute("attempt", attempt);
+        model.addAttribute("showAnswer", attempt != null);
+        model.addAttribute("grades", PracticeGrade.values());
+
+        model.addAttribute("shortAnswerHtml", markdownService.toHtml(question.getShortAnswer()));
+        model.addAttribute("fullAnswerHtml", markdownService.toHtml(question.getFullAnswer()));
+        model.addAttribute("hintHtml", markdownService.toHtml(question.getHint()));
+        model.addAttribute("theoryNotesHtml", markdownService.toHtml(question.getTheoryNotes()));
+
+        model.addAttribute("questionImages", imagesByRole(question, ImageRole.QUESTION));
+        model.addAttribute("answerImages", imagesByRole(question, ImageRole.ANSWER));
     }
 
     private List<QuestionImage> imagesByRole(Question question, ImageRole role) {

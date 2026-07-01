@@ -1,8 +1,10 @@
 package com.els.javatheorytrainer.service;
 
+import com.els.javatheorytrainer.entity.PracticeAttempt;
 import com.els.javatheorytrainer.entity.Question;
 import com.els.javatheorytrainer.enums.PracticeGrade;
 import com.els.javatheorytrainer.enums.QuestionStatus;
+import com.els.javatheorytrainer.repository.PracticeAttemptRepository;
 import com.els.javatheorytrainer.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import java.util.List;
 public class PracticeService {
 
     private final QuestionRepository questionRepository;
+    private final PracticeAttemptRepository practiceAttemptRepository;
 
     /**
      * Picks next question from selected section.
@@ -72,26 +75,58 @@ public class PracticeService {
     }
 
     /**
-     * Registers user's self-evaluation.
+     * Saves user's written answer before the reference answer is shown.
      */
     @Transactional
-    public Question submitGrade(Long questionId, PracticeGrade grade) {
+    public PracticeAttempt submitAnswer(Long questionId, String userAnswer) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new IllegalArgumentException("Question not found: " + questionId));
 
+        if (userAnswer == null || userAnswer.isBlank()) {
+            throw new IllegalArgumentException("Answer cannot be empty");
+        }
+
+        PracticeAttempt attempt = new PracticeAttempt();
+        attempt.setQuestion(question);
+        attempt.setUserAnswer(userAnswer.trim());
+
+        return practiceAttemptRepository.save(attempt);
+    }
+
+    /**
+     * Registers user's self-evaluation for a saved attempt.
+     */
+    @Transactional
+    public PracticeAttempt submitGrade(Long attemptId, PracticeGrade grade) {
+        PracticeAttempt attempt = practiceAttemptRepository.findById(attemptId)
+                .orElseThrow(() -> new IllegalArgumentException("Practice attempt not found: " + attemptId));
+
+        if (attempt.isGraded()) {
+            return attempt;
+        }
+
+        Question question = attempt.getQuestion();
         boolean correct = grade != PracticeGrade.AGAIN;
 
-        // In this first version each question has only one visible attempt.
         question.registerAnswer(correct, true);
         question.setNextReviewAt(calculateNextReviewAt(grade));
 
-        return question;
+        attempt.setGrade(grade);
+        attempt.setGradedAt(LocalDateTime.now());
+
+        return attempt;
     }
 
     @Transactional(readOnly = true)
     public Question findQuestionForPractice(Long questionId) {
         return questionRepository.findById(questionId)
                 .orElseThrow(() -> new IllegalArgumentException("Question not found: " + questionId));
+    }
+
+    @Transactional(readOnly = true)
+    public PracticeAttempt findAttempt(Long attemptId) {
+        return practiceAttemptRepository.findById(attemptId)
+                .orElseThrow(() -> new IllegalArgumentException("Practice attempt not found: " + attemptId));
     }
 
     private LocalDateTime calculateNextReviewAt(PracticeGrade grade) {

@@ -39,42 +39,28 @@
                     th:each="question : ${questions}"
                     th:data-row-href="@{/admin/questions/{id}(id=${question.id})}">
                     <td data-label="ID" th:text="${question.id}">1</td>
-
                     <td data-label="Том" th:text="${question.section.volume.title}">Java Core</td>
-
                     <td data-label="Розділ" th:text="${question.section.title}">JVM, Memory</td>
-
                     <td data-label="Питання">
                         <div class="question-preview" th:text="${question.questionText}">
                             Що таке JVM?
                         </div>
                     </td>
-
                     <td data-label="Складність" th:text="${question.difficulty}">MEDIUM</td>
-
                     <td data-label="Статус">
                         <span th:if="${question.status.name() == 'ACTIVE'}" class="badge badge-green">
                             ACTIVE
                         </span>
-
-                                            <span th:if="${question.status.name() == 'DRAFT'}" class="badge badge-gray">
+                        <span th:if="${question.status.name() == 'DRAFT'}" class="badge badge-gray">
                             DRAFT
                         </span>
-
-                                            <span th:if="${question.status.name() == 'ARCHIVED'}" class="badge badge-gray">
+                        <span th:if="${question.status.name() == 'ARCHIVED'}" class="badge badge-gray">
                             ARCHIVED
                         </span>
                     </td>
-
                     <td data-label="Порядок" th:text="${question.sortOrder}">0</td>
-
                     <td data-label="Дії" class="actions-cell">
-
-                    <td th:text="${question.sortOrder}">0</td>
-
-                    <td>
                         <div class="actions">
-
                             <a class="btn btn-small"
                                th:href="@{/admin/questions/{id}/edit(id=${question.id})}">
                                 Редагувати

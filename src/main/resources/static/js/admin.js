@@ -5,7 +5,7 @@
  * - searchable select inputs via Tom Select;
  * - cascading Volume -> Section selects for question form;
  * - clickable table rows;
- * - mobile-friendly behavior.
+ * - image lightbox previews.
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -15,11 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
     initImageLightbox();
 });
 
-/**
- * Initializes image lightbox.
- *
- * Any link with class "image-lightbox" will open image in full preview mode.
- */
 function initImageLightbox() {
     if (typeof GLightbox === 'undefined') {
         return;
@@ -34,11 +29,6 @@ function initImageLightbox() {
     });
 }
 
-/**
- * Initializes simple searchable selects.
- *
- * Used for selects that do not depend on another select.
- */
 function initBasicSelects() {
     document.querySelectorAll('select[data-basic-select]').forEach(function (select) {
         if (select.tomselect) {
@@ -59,12 +49,6 @@ function initBasicSelects() {
     });
 }
 
-/**
- * Initializes cascading searchable selects:
- * Volume -> Section.
- *
- * Used on question create/edit form.
- */
 function initQuestionCascadeSelects() {
     const volumeSelect = document.querySelector('select[data-volume-select]');
     const sectionSelect = document.querySelector('select[data-section-select]');
@@ -142,13 +126,6 @@ function initQuestionCascadeSelects() {
     rebuildSections(initialVolumeId, initialSectionId);
 }
 
-/**
- * Makes table rows clickable.
- *
- * Important:
- * clicks on buttons, links and forms are ignored,
- * so edit/archive buttons still work normally.
- */
 function initClickableRows() {
     document.querySelectorAll('[data-row-href]').forEach(function (row) {
         row.setAttribute('tabindex', '0');

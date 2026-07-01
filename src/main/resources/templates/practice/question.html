@@ -73,14 +73,47 @@
                 </div>
             </div>
 
-            <div th:if="${!showAnswer}" class="practice-actions">
-                <a class="btn btn-primary btn-large"
-                   th:href="@{/practice/questions/{id}(id=${question.id}, answer=true)}">
-                    Показати відповідь
-                </a>
+            <div th:if="${!showAnswer}">
+                <form class="form form-wide"
+                      th:action="@{/practice/questions/{id}/answer(id=${question.id})}"
+                      method="post">
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <div class="form-group">
+                        <label class="form-label" for="userAnswer">Твоя відповідь</label>
+                        <textarea class="form-control practice-answer-input"
+                                  id="userAnswer"
+                                  name="userAnswer"
+                                  rows="10"
+                                  th:text="${userAnswer}"
+                                  placeholder="Напиши відповідь так, ніби пояснюєш її на співбесіді..."
+                                  required></textarea>
+                        <span class="form-help">
+                            Після збереження ти побачиш еталонну відповідь і зможеш оцінити себе.
+                        </span>
+                    </div>
+
+                    <div th:if="${answerError}" class="alert alert-error" th:text="${answerError}">
+                        Error
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary btn-large" type="submit">
+                            Зберегти відповідь
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <div th:if="${showAnswer}">
+
+                <div class="content-block">
+                    <h3 class="content-block-title">Твоя відповідь</h3>
+                    <div class="content-box user-answer-box" th:text="${attempt.userAnswer}">
+                        My answer
+                    </div>
+                </div>
 
                 <div class="content-block">
                     <h3 class="content-block-title">Коротка відповідь</h3>
@@ -92,7 +125,7 @@
 
                     <div class="content-box"
                          th:if="${shortAnswerHtml == null || shortAnswerHtml.isBlank()}">
-                        —
+                        -
                     </div>
                 </div>
 
@@ -106,7 +139,7 @@
 
                     <div class="content-box"
                          th:if="${fullAnswerHtml == null || fullAnswerHtml.isBlank()}">
-                        —
+                        -
                     </div>
                 </div>
 
@@ -160,16 +193,16 @@
                     </div>
                 </div>
 
-                <div class="content-block" th:if="${question.hint != null && !question.hint.isBlank()}">
+                <div class="content-block" th:if="${hintHtml != null && !hintHtml.isBlank()}">
                     <h3 class="content-block-title">Підказка</h3>
-                    <div class="content-box" th:text="${question.hint}"></div>
+                    <div class="content-box markdown-content" th:utext="${hintHtml}"></div>
                 </div>
 
                 <div class="practice-grade-block">
                     <h3>Як ти відповів?</h3>
 
                     <form class="grade-grid"
-                          th:action="@{/practice/questions/{id}/grade(id=${question.id})}"
+                          th:action="@{/practice/attempts/{attemptId}/grade(attemptId=${attempt.id})}"
                           method="post">
 
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

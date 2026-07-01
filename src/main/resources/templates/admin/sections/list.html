@@ -37,16 +37,16 @@
                 <tr class="clickable-row"
                     th:each="section : ${sections}"
                     th:data-row-href="@{/admin/sections/{id}(id=${section.id})}">
-                    <td th:text="${section.id}">1</td>
-                    <td th:text="${section.volume.title}">Java Core</td>
-                    <td th:text="${section.title}">JVM, Memory</td>
-                    <td th:text="${section.slug}">jvm-memory</td>
-                    <td th:text="${section.sortOrder}">0</td>
-                    <td>
+                    <td data-label="ID" th:text="${section.id}">1</td>
+                    <td data-label="Том" th:text="${section.volume.title}">Java Core</td>
+                    <td data-label="Назва" th:text="${section.title}">JVM, Memory</td>
+                    <td data-label="Slug" th:text="${section.slug}">jvm-memory</td>
+                    <td data-label="Порядок" th:text="${section.sortOrder}">0</td>
+                    <td data-label="Статус">
                         <span th:if="${section.active}" class="badge badge-green">Активний</span>
                         <span th:if="${!section.active}" class="badge badge-gray">Архів</span>
                     </td>
-                    <td>
+                    <td data-label="Дії" class="actions-cell">
                         <div class="actions">
                             <a class="btn btn-small btn-secondary"
                                th:href="@{/admin/sections/{id}(id=${section.id})}">
@@ -79,16 +79,6 @@
                             </form>
                         </div>
                     </td>
-                    <td data-label="ID" th:text="${section.id}">1</td>
-                    <td data-label="Том" th:text="${section.volume.title}">Java Core</td>
-                    <td data-label="Назва" th:text="${section.title}">JVM, Memory</td>
-                    <td data-label="Slug" th:text="${section.slug}">jvm-memory</td>
-                    <td data-label="Порядок" th:text="${section.sortOrder}">0</td>
-                    <td data-label="Статус">
-                        <span th:if="${section.active}" class="badge badge-green">Активний</span>
-                        <span th:if="${!section.active}" class="badge badge-gray">Архів</span>
-                    </td>
-                    <td data-label="Дії" class="actions-cell">
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(sections)}">

@@ -36,17 +36,16 @@
                 <tr class="clickable-row"
                     th:each="volume : ${volumes}"
                     th:data-row-href="@{/admin/volumes/{id}(id=${volume.id})}">
-                    <td th:text="${volume.id}">1</td>
-                    <td th:text="${volume.title}">Java Core</td>
-                    <td th:text="${volume.slug}">java-core</td>
-                    <td th:text="${volume.sortOrder}">0</td>
-                    <td>
+                    <td data-label="ID" th:text="${volume.id}">1</td>
+                    <td data-label="Назва" th:text="${volume.title}">Java Core</td>
+                    <td data-label="Slug" th:text="${volume.slug}">java-core</td>
+                    <td data-label="Порядок" th:text="${volume.sortOrder}">0</td>
+                    <td data-label="Статус">
                         <span th:if="${volume.active}" class="badge badge-green">Активний</span>
                         <span th:if="${!volume.active}" class="badge badge-gray">Архів</span>
                     </td>
-                    <td>
+                    <td data-label="Дії" class="actions-cell">
                         <div class="actions">
-
                             <a class="btn btn-small"
                                th:href="@{/admin/volumes/{id}/edit(id=${volume.id})}">
                                 Редагувати
@@ -73,15 +72,6 @@
                             </form>
                         </div>
                     </td>
-                    <td data-label="ID" th:text="${volume.id}">1</td>
-                    <td data-label="Назва" th:text="${volume.title}">Java Core</td>
-                    <td data-label="Slug" th:text="${volume.slug}">java-core</td>
-                    <td data-label="Порядок" th:text="${volume.sortOrder}">0</td>
-                    <td data-label="Статус">
-                        <span th:if="${volume.active}" class="badge badge-green">Активний</span>
-                        <span th:if="${!volume.active}" class="badge badge-gray">Архів</span>
-                    </td>
-                    <td data-label="Дії" class="actions-cell">
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(volumes)}">
