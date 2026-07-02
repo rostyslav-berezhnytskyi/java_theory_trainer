@@ -30,10 +30,51 @@
                 </a>
             </div>
 
+            <div class="practice-stats-grid">
+                <div class="practice-stat-card">
+                    <div class="practice-stat-label">This question</div>
+                    <div class="practice-stat-main">
+                        <span th:text="${question.goodCount + question.easyCount}">0</span>
+                        <span> / </span>
+                        <span th:text="${question.timesShown}">0</span>
+                        <span> / 1</span>
+                    </div>
+                    <div class="practice-stat-help">mastered / opened / total</div>
+                    <div class="practice-stat-grades">
+                        <span>Again <strong th:text="${question.againCount}">0</strong></span>
+                        <span>Hard <strong th:text="${question.hardCount}">0</strong></span>
+                        <span>Good <strong th:text="${question.goodCount}">0</strong></span>
+                        <span>Easy <strong th:text="${question.easyCount}">0</strong></span>
+                    </div>
+                </div>
+
+                <div class="practice-stat-card" th:if="${sectionStats != null}">
+                    <div class="practice-stat-label">Section</div>
+                    <div class="practice-stat-main" th:text="${sectionStats.progressText()}">0 / 0 / 0</div>
+                    <div class="practice-stat-help">mastered / opened / active</div>
+                    <div class="practice-stat-grades" th:text="${sectionStats.gradeText()}">A:0 H:0 G:0 E:0</div>
+                </div>
+
+                <div class="practice-stat-card" th:if="${volumeStats != null}">
+                    <div class="practice-stat-label">Volume</div>
+                    <div class="practice-stat-main" th:text="${volumeStats.progressText()}">0 / 0 / 0</div>
+                    <div class="practice-stat-help">mastered / opened / active</div>
+                    <div class="practice-stat-grades" th:text="${volumeStats.gradeText()}">A:0 H:0 G:0 E:0</div>
+                </div>
+            </div>
+
             <div class="content-block">
                 <h3 class="content-block-title">Питання</h3>
-                <div class="content-box practice-question-text" th:text="${question.questionText}">
+                <div class="content-box practice-question-text" id="practiceQuestionText" th:text="${question.questionText}">
                     Що таке JVM?
+                </div>
+                <div class="voice-actions">
+                    <button class="btn btn-secondary btn-small js-speak-target"
+                            type="button"
+                            data-speech-target="#practiceQuestionText"
+                            data-ai-speech-url="/practice/audio/speech">
+                        Прослухати питання
+                    </button>
                 </div>
             </div>
 
@@ -81,7 +122,20 @@
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                     <div class="form-group">
-                        <label class="form-label" for="userAnswer">Твоя відповідь</label>
+                        <div class="form-label-row">
+                            <label class="form-label" for="userAnswer">Твоя відповідь</label>
+                            <button class="btn btn-secondary btn-small js-dictate-answer"
+                                    type="button"
+                                    data-speech-input="#userAnswer">
+                                Говорити відповідь
+                            </button>
+                            <button class="btn btn-secondary btn-small js-ai-record-transcribe"
+                                    type="button"
+                                    data-transcription-url="/practice/audio/transcribe"
+                                    data-transcription-input="#userAnswer">
+                                AI запис відповіді
+                            </button>
+                        </div>
                         <textarea class="form-control practice-answer-input"
                                   id="userAnswer"
                                   name="userAnswer"
@@ -112,6 +166,100 @@
                     <h3 class="content-block-title">Твоя відповідь</h3>
                     <div class="content-box user-answer-box" th:text="${attempt.userAnswer}">
                         My answer
+                    </div>
+                </div>
+
+                <div class="content-block ai-evaluation" th:if="${attempt.hasAiEvaluation()}">
+                    <div class="content-block-title-row">
+                        <h3 class="content-block-title">AI оцінка</h3>
+                        <button class="btn btn-secondary btn-small js-speak-target"
+                                type="button"
+                                data-speech-target="#aiEvaluationText"
+                                data-ai-speech-url="/practice/audio/speech">
+                            Прослухати AI оцінку
+                        </button>
+                    </div>
+
+                    <div id="aiEvaluationText">
+                        <div class="content-box ai-summary">
+                            <div class="ai-metrics">
+                                <div class="ai-metric" th:if="${attempt.aiScorePercent != null}">
+                                    <span class="ai-metric-label">Score</span>
+                                    <strong><span th:text="${attempt.aiScorePercent}">80</span>%</strong>
+                                </div>
+
+                                <div class="ai-metric" th:if="${attempt.aiSuggestedGrade != null}">
+                                    <span class="ai-metric-label">Suggested grade</span>
+                                    <strong th:text="${attempt.aiSuggestedGrade}">GOOD</strong>
+                                </div>
+                            </div>
+
+                            <div class="ai-main-feedback"
+                                 th:if="${attempt.aiFeedback != null && !attempt.aiFeedback.isBlank()}"
+                                 th:text="${attempt.aiFeedback}">
+                                Feedback
+                            </div>
+                        </div>
+
+                        <div class="content-box ai-feedback-section" th:if="${attempt.aiGoodParts != null && !attempt.aiGoodParts.isBlank()}">
+                            <strong>Правильно:</strong>
+                            <div th:text="${attempt.aiGoodParts}">Good parts</div>
+                        </div>
+
+                        <div class="content-box ai-feedback-section" th:if="${attempt.aiMissingPoints != null && !attempt.aiMissingPoints.isBlank()}">
+                            <strong>Не вистачає:</strong>
+                            <div th:text="${attempt.aiMissingPoints}">Missing points</div>
+                        </div>
+
+                        <div class="content-box ai-feedback-section" th:if="${attempt.aiWrongParts != null && !attempt.aiWrongParts.isBlank()}">
+                            <strong>Неправильно або неточно:</strong>
+                            <div th:text="${attempt.aiWrongParts}">Wrong parts</div>
+                        </div>
+
+                        <div class="content-box ai-feedback-section" th:if="${attempt.aiDetails != null && !attempt.aiDetails.isBlank()}">
+                            <strong>Пояснення:</strong>
+                            <div th:text="${attempt.aiDetails}">Details</div>
+                        </div>
+
+                        <div class="content-box ai-feedback-section" th:if="${attempt.aiFollowUpSuggestion != null && !attempt.aiFollowUpSuggestion.isBlank()}">
+                            <strong>Що можна уточнити:</strong>
+                            <div th:text="${attempt.aiFollowUpSuggestion}">Follow-up question</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-chat"
+                         th:data-chat-url="@{/practice/attempts/{attemptId}/ai-chat(attemptId=${attempt.id})}">
+                        <div class="ai-chat-messages" aria-live="polite"></div>
+
+                        <form class="ai-chat-form">
+                            <label class="form-label" th:for="'aiChatMessage-' + ${attempt.id}">
+                                Запитати AI про цю відповідь
+                            </label>
+
+                            <textarea class="form-control ai-chat-input"
+                                      th:id="'aiChatMessage-' + ${attempt.id}"
+                                      rows="3"
+                                      placeholder="Наприклад: поясни, чому це неправильно, або наведи приклад..."
+                                      required></textarea>
+
+                            <div class="form-actions ai-chat-actions">
+                                <button class="btn btn-secondary js-ai-record-transcribe"
+                                        type="button"
+                                        data-transcription-url="/practice/audio/transcribe"
+                                        th:data-transcription-input="'#aiChatMessage-' + ${attempt.id}">
+                                    AI запис питання
+                                </button>
+                                <button class="btn btn-primary" type="submit">Запитати</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="content-block" th:if="${attempt.aiEvaluationError != null && !attempt.aiEvaluationError.isBlank()}">
+                    <h3 class="content-block-title">AI оцінка</h3>
+                    <div class="alert alert-error">
+                        AI evaluation is unavailable:
+                        <span th:text="${attempt.aiEvaluationError}">Error</span>
                     </div>
                 </div>
 

@@ -4,6 +4,8 @@ import com.els.javatheorytrainer.entity.Section;
 import com.els.javatheorytrainer.entity.Volume;
 import com.els.javatheorytrainer.repository.SectionRepository;
 import com.els.javatheorytrainer.repository.VolumeRepository;
+import com.els.javatheorytrainer.service.PracticeService;
+import com.els.javatheorytrainer.service.PracticeStatsService;
 import com.els.javatheorytrainer.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,8 @@ public class AdminSectionController {
 
     private final SectionRepository sectionRepository;
     private final VolumeRepository volumeRepository;
+    private final PracticeService practiceService;
+    private final PracticeStatsService practiceStatsService;
 
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
@@ -33,6 +37,7 @@ public class AdminSectionController {
                 .orElseThrow(() -> new IllegalArgumentException("Section not found: " + id));
 
         model.addAttribute("section", section);
+        model.addAttribute("sectionStats", practiceStatsService.sectionStatsById().get(id));
 
         return "admin/sections/view";
     }
@@ -43,6 +48,7 @@ public class AdminSectionController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("sections", sectionRepository.findAllByOrderByVolumeSortOrderAscSortOrderAscTitleAsc());
+        model.addAttribute("sectionStatsById", practiceStatsService.sectionStatsById());
         return "admin/sections/list";
     }
 
@@ -157,6 +163,12 @@ public class AdminSectionController {
         return "redirect:/admin/sections";
     }
 
+    @PostMapping("/{id}/reset-practice")
+    public String resetPractice(@PathVariable Long id, @RequestHeader(value = "Referer", required = false) String referer) {
+        practiceService.resetSectionPracticeStats(id);
+        return redirectBack(referer, "/admin/sections/" + id);
+    }
+
     /**
      * Generates slug from title if slug is empty.
      */
@@ -164,5 +176,9 @@ public class AdminSectionController {
         if (section.getSlug() == null || section.getSlug().isBlank()) {
             section.setSlug(SlugUtils.toSlug(section.getTitle()));
         }
+    }
+
+    private String redirectBack(String referer, String fallback) {
+        return "redirect:" + (referer == null || referer.isBlank() ? fallback : referer);
     }
 }

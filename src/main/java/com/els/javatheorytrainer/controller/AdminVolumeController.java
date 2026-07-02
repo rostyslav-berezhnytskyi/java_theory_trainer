@@ -2,6 +2,8 @@ package com.els.javatheorytrainer.controller;
 
 import com.els.javatheorytrainer.entity.Volume;
 import com.els.javatheorytrainer.repository.VolumeRepository;
+import com.els.javatheorytrainer.service.PracticeService;
+import com.els.javatheorytrainer.service.PracticeStatsService;
 import com.els.javatheorytrainer.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminVolumeController {
 
     private final VolumeRepository volumeRepository;
+    private final PracticeService practiceService;
+    private final PracticeStatsService practiceStatsService;
 
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
@@ -30,6 +34,7 @@ public class AdminVolumeController {
                 .orElseThrow(() -> new IllegalArgumentException("Volume not found: " + id));
 
         model.addAttribute("volume", volume);
+        model.addAttribute("volumeStats", practiceStatsService.volumeStatsById().get(id));
 
         return "admin/volumes/view";
     }
@@ -40,6 +45,7 @@ public class AdminVolumeController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("volumes", volumeRepository.findAllByOrderBySortOrderAscTitleAsc());
+        model.addAttribute("volumeStatsById", practiceStatsService.volumeStatsById());
         return "admin/volumes/list";
     }
 
@@ -135,6 +141,12 @@ public class AdminVolumeController {
         return "redirect:/admin/volumes";
     }
 
+    @PostMapping("/{id}/reset-practice")
+    public String resetPractice(@PathVariable Long id, @RequestHeader(value = "Referer", required = false) String referer) {
+        practiceService.resetVolumePracticeStats(id);
+        return redirectBack(referer, "/admin/volumes/" + id);
+    }
+
     /**
      * If slug is empty, generate it from title.
      */
@@ -142,5 +154,9 @@ public class AdminVolumeController {
         if (volume.getSlug() == null || volume.getSlug().isBlank()) {
             volume.setSlug(SlugUtils.toSlug(volume.getTitle()));
         }
+    }
+
+    private String redirectBack(String referer, String fallback) {
+        return "redirect:" + (referer == null || referer.isBlank() ? fallback : referer);
     }
 }

@@ -40,6 +40,75 @@
                 </div>
             </a>
         </div>
+
+        <div class="card ai-usage-card">
+            <div class="card-header">
+                <h2 class="card-title">AI usage</h2>
+            </div>
+
+            <div th:if="${#lists.isEmpty(aiUsageSummaries)}" class="content-box">
+                No AI usage logged yet.
+            </div>
+
+            <table class="table" th:if="${!#lists.isEmpty(aiUsageSummaries)}">
+                <thead>
+                <tr>
+                    <th>Operation</th>
+                    <th>Model</th>
+                    <th>Calls</th>
+                    <th>OK / Failed</th>
+                    <th>Input chars</th>
+                    <th>Output chars</th>
+                    <th>Audio bytes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="summary : ${aiUsageSummaries}">
+                    <td data-label="Operation" th:text="${summary.operation()}">EVALUATION</td>
+                    <td data-label="Model" th:text="${summary.model()}">gpt-5.4-mini</td>
+                    <td data-label="Calls" th:text="${summary.calls()}">0</td>
+                    <td data-label="OK / Failed"
+                        th:text="${summary.successfulCalls()} + ' / ' + ${summary.failedCalls()}">0 / 0</td>
+                    <td data-label="Input chars" th:text="${summary.inputChars()}">0</td>
+                    <td data-label="Output chars" th:text="${summary.outputChars()}">0</td>
+                    <td data-label="Audio bytes" th:text="${summary.audioBytes()}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card ai-usage-card" th:if="${!#lists.isEmpty(recentAiUsageLogs)}">
+            <div class="card-header">
+                <h2 class="card-title">Recent AI calls</h2>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Operation</th>
+                    <th>Model</th>
+                    <th>Status</th>
+                    <th>Input / Output</th>
+                    <th>Audio</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="log : ${recentAiUsageLogs}">
+                    <td data-label="Time" th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 12:00</td>
+                    <td data-label="Operation" th:text="${log.operation}">CHAT</td>
+                    <td data-label="Model" th:text="${log.model}">gpt-5.4-mini</td>
+                    <td data-label="Status">
+                        <span class="badge"
+                              th:classappend="${log.success} ? ' badge-green' : ' badge-gray'"
+                              th:text="${log.success} ? 'OK' : 'FAILED'">OK</span>
+                    </td>
+                    <td data-label="Input / Output" th:text="${log.inputChars} + ' / ' + ${log.outputChars}">0 / 0</td>
+                    <td data-label="Audio" th:text="${log.audioBytes == null ? '-' : log.audioBytes}">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </main>
 
 </div>

@@ -31,6 +31,35 @@ public class PracticeAttempt {
     @Column(length = 30)
     private PracticeGrade grade;
 
+    private Integer aiScorePercent;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    private PracticeGrade aiSuggestedGrade;
+
+    @Column(columnDefinition = "text")
+    private String aiFeedback;
+
+    @Column(columnDefinition = "text")
+    private String aiDetails;
+
+    @Column(columnDefinition = "text")
+    private String aiMissingPoints;
+
+    @Column(columnDefinition = "text")
+    private String aiWrongParts;
+
+    @Column(columnDefinition = "text")
+    private String aiGoodParts;
+
+    @Column(columnDefinition = "text")
+    private String aiFollowUpSuggestion;
+
+    private LocalDateTime aiEvaluatedAt;
+
+    @Column(columnDefinition = "text")
+    private String aiEvaluationError;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -39,5 +68,9 @@ public class PracticeAttempt {
 
     public boolean isGraded() {
         return grade != null;
+    }
+
+    public boolean hasAiEvaluation() {
+        return aiEvaluatedAt != null && aiEvaluationError == null;
     }
 }

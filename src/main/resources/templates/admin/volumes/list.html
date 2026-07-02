@@ -26,6 +26,7 @@
                     <th>ID</th>
                     <th>Назва</th>
                     <th>Slug</th>
+                    <th>Progress</th>
                     <th>Порядок</th>
                     <th>Статус</th>
                     <th>Дії</th>
@@ -35,10 +36,18 @@
                 <tbody>
                 <tr class="clickable-row"
                     th:each="volume : ${volumes}"
+                    th:with="stats=${volumeStatsById[volume.id]}"
                     th:data-row-href="@{/admin/volumes/{id}(id=${volume.id})}">
                     <td data-label="ID" th:text="${volume.id}">1</td>
                     <td data-label="Назва" th:text="${volume.title}">Java Core</td>
                     <td data-label="Slug" th:text="${volume.slug}">java-core</td>
+                    <td data-label="Progress">
+                        <div class="progress-cell" th:if="${stats != null}">
+                            <strong th:text="${stats.progressText()}">0 / 0 / 0</strong>
+                            <span th:text="${stats.gradeText()}">A:0 H:0 G:0 E:0</span>
+                        </div>
+                        <span th:if="${stats == null}">0 / 0 / 0</span>
+                    </td>
                     <td data-label="Порядок" th:text="${volume.sortOrder}">0</td>
                     <td data-label="Статус">
                         <span th:if="${volume.active}" class="badge badge-green">Активний</span>
@@ -50,6 +59,16 @@
                                th:href="@{/admin/volumes/{id}/edit(id=${volume.id})}">
                                 Редагувати
                             </a>
+
+                            <form class="inline-form"
+                                  th:action="@{/admin/volumes/{id}/reset-practice(id=${volume.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Reset practice stats for all questions in this volume?');">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-secondary" type="submit">
+                                    Reset
+                                </button>
+                            </form>
 
                             <form th:if="${volume.active}"
                                   class="inline-form"
@@ -75,7 +94,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(volumes)}">
-                    <td colspan="6">Поки немає жодного тому.</td>
+                    <td colspan="7">Поки немає жодного тому.</td>
                 </tr>
                 </tbody>
             </table>

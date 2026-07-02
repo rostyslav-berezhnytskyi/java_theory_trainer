@@ -213,6 +213,21 @@ a:hover {
     font-weight: 700;
 }
 
+.form-label-row,
+.content-block-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.form-label-row .form-label,
+.content-block-title-row .content-block-title {
+    margin-bottom: 0;
+}
+
 .form-control {
     width: 100%;
     border: 1px solid #d1d5db;
@@ -233,6 +248,19 @@ a:hover {
     margin-top: 6px;
     color: #6b7280;
     font-size: 13px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 42px;
+    font-weight: 600;
+}
+
+.checkbox-row input {
+    width: 18px;
+    height: 18px;
 }
 
 .form-actions {
@@ -271,6 +299,11 @@ a:hover {
 .dashboard-card-text {
     color: #6b7280;
     font-size: 14px;
+}
+
+.ai-usage-card {
+    margin-top: 22px;
+    overflow-x: auto;
 }
 
 @media (max-width: 900px) {
@@ -372,6 +405,24 @@ textarea.form-control {
 
 .meta-value {
     font-weight: 700;
+}
+
+.meta-help {
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.progress-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+}
+
+.progress-cell span {
+    color: #6b7280;
+    font-size: 13px;
 }
 
 .list-clean {
@@ -819,13 +870,169 @@ textarea.form-control {
     font-weight: 600;
 }
 
+.voice-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.voice-active {
+    background: #dc2626;
+    color: #ffffff;
+}
+
 .practice-answer-input {
     min-height: 220px;
+}
+
+.practice-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.practice-stat-card {
+    background: #f8fafc;
+    border: 1px solid #dbe4ef;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.practice-stat-label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.practice-stat-main {
+    color: #111827;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.practice-stat-help,
+.practice-stat-grades {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.practice-stat-grades {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .user-answer-box {
     background: #f8fafc;
     border-color: #cbd5e1;
+}
+
+.ai-evaluation {
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 20px 0 4px;
+}
+
+.ai-summary {
+    background: #f8fafc;
+    border-color: #bfdbfe;
+}
+
+.ai-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.ai-metric {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+
+.ai-metric-label {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ai-main-feedback {
+    font-weight: 700;
+}
+
+.ai-feedback-section {
+    margin-top: 10px;
+}
+
+.ai-chat {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.ai-chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 360px;
+    overflow-y: auto;
+    margin-bottom: 14px;
+}
+
+.ai-chat-message {
+    max-width: 88%;
+    border-radius: 10px;
+    padding: 10px 12px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
+.ai-chat-message.markdown-content {
+    white-space: normal;
+}
+
+.ai-chat-message.markdown-content p:last-child,
+.ai-chat-message.markdown-content ul:last-child,
+.ai-chat-message.markdown-content ol:last-child {
+    margin-bottom: 0;
+}
+
+.ai-chat-message-user {
+    align-self: flex-end;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.ai-chat-message-assistant {
+    align-self: flex-start;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #1f2937;
+}
+
+.ai-chat-message-error {
+    align-self: flex-start;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.ai-chat-input {
+    min-height: 86px;
+}
+
+.ai-chat-actions {
+    margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 .practice-actions {
@@ -867,6 +1074,18 @@ textarea.form-control {
 @media (max-width: 900px) {
     .practice-question-text {
         font-size: 18px;
+    }
+
+    .form-label-row,
+    .content-block-title-row,
+    .voice-actions,
+    .practice-stats-grid {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .practice-stats-grid {
+        display: flex;
     }
 
     .grade-grid {

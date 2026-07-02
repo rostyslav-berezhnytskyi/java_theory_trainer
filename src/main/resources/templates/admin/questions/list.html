@@ -27,6 +27,7 @@
                     <th>Том</th>
                     <th>Розділ</th>
                     <th>Питання</th>
+                    <th>Practice</th>
                     <th>Складність</th>
                     <th>Статус</th>
                     <th>Порядок</th>
@@ -44,6 +45,22 @@
                     <td data-label="Питання">
                         <div class="question-preview" th:text="${question.questionText}">
                             Що таке JVM?
+                        </div>
+                    </td>
+                    <td data-label="Practice">
+                        <div class="progress-cell">
+                            <strong>
+                                <span th:text="${question.goodCount + question.easyCount}">0</span>
+                                <span> / </span>
+                                <span th:text="${question.timesShown}">0</span>
+                                <span> / 1</span>
+                            </strong>
+                            <span>
+                                A:<span th:text="${question.againCount}">0</span>
+                                H:<span th:text="${question.hardCount}">0</span>
+                                G:<span th:text="${question.goodCount}">0</span>
+                                E:<span th:text="${question.easyCount}">0</span>
+                            </span>
                         </div>
                     </td>
                     <td data-label="Складність" th:text="${question.difficulty}">MEDIUM</td>
@@ -65,6 +82,16 @@
                                th:href="@{/admin/questions/{id}/edit(id=${question.id})}">
                                 Редагувати
                             </a>
+
+                            <form class="inline-form"
+                                  th:action="@{/admin/questions/{id}/reset-practice(id=${question.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Reset practice stats for this question?');">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button class="btn btn-small btn-secondary" type="submit">
+                                    Reset
+                                </button>
+                            </form>
 
                             <form th:if="${question.status.name() != 'ARCHIVED'}"
                                   class="inline-form"
@@ -90,7 +117,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(questions)}">
-                    <td colspan="8">Поки немає жодного питання.</td>
+                    <td colspan="9">Поки немає жодного питання.</td>
                 </tr>
                 </tbody>
             </table>

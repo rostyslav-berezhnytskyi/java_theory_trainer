@@ -29,6 +29,36 @@
                 <div class="form-grid form-grid-2">
 
                     <div class="form-group">
+                        <label class="form-label" for="scope">Practice scope</label>
+
+                        <select class="form-control"
+                                id="scope"
+                                name="scope"
+                                required>
+                            <option th:each="scope : ${scopes}"
+                                    th:value="${scope.name()}"
+                                    th:text="${scope.label}">
+                                Section
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="filter">Question filter</label>
+
+                        <select class="form-control"
+                                id="filter"
+                                name="filter"
+                                required>
+                            <option th:each="filter : ${filters}"
+                                    th:value="${filter.name()}"
+                                    th:text="${filter.label}">
+                                All active
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label" for="volumeId">Том</label>
 
                         <select class="form-control"
@@ -54,8 +84,7 @@
                                 id="sectionId"
                                 name="sectionId"
                                 data-section-select
-                                data-placeholder="Почни вводити назву розділу..."
-                                required>
+                                data-placeholder="Почни вводити назву розділу...">
                             <option value=""></option>
 
                             <option th:each="section : ${sections}"
@@ -65,6 +94,17 @@
                                 JVM, Memory
                             </option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Order</label>
+
+                        <label class="checkbox-row">
+                            <input type="checkbox"
+                                   name="randomOrder"
+                                   value="true">
+                            <span>Random questions</span>
+                        </label>
                     </div>
 
                 </div>

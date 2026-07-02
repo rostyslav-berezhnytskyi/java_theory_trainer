@@ -23,8 +23,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 20MB
+      max-file-size: 25MB
+      max-request-size: 30MB
 
 app:
   security:
@@ -33,3 +33,13 @@ app:
 
   uploads:
     root: ${APP_UPLOADS_ROOT}
+
+  ai:
+    enabled: ${APP_AI_ENABLED:true}
+    openai-api-key: ${OPENAI_API_KEY:}
+    model: ${OPENAI_MODEL:gpt-5.4-mini}
+    transcription-model: ${OPENAI_TRANSCRIPTION_MODEL:gpt-4o-transcribe}
+    tts-model: ${OPENAI_TTS_MODEL:gpt-4o-mini-tts}
+    tts-voice: ${OPENAI_TTS_VOICE:marin}
+    chat-max-output-tokens: ${OPENAI_CHAT_MAX_OUTPUT_TOKENS:3000}
+    timeout-seconds: ${OPENAI_TIMEOUT_SECONDS:45}

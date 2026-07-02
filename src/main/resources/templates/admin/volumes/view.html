@@ -21,6 +21,13 @@
                        th:href="@{/admin/volumes/{id}/edit(id=${volume.id})}">
                         Редагувати
                     </a>
+                    <form class="inline-form"
+                          th:action="@{/admin/volumes/{id}/reset-practice(id=${volume.id})}"
+                          method="post"
+                          onsubmit="return confirm('Reset practice stats for all questions in this volume?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-danger" type="submit">Reset practice</button>
+                    </form>
                 </div>
             </div>
 
@@ -53,6 +60,13 @@
                 <div class="meta-item">
                     <div class="meta-label">Оновлено</div>
                     <div class="meta-value" th:text="${volume.updatedAt}">—</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Practice progress</div>
+                    <div class="meta-value" th:if="${volumeStats != null}" th:text="${volumeStats.progressText()}">0 / 0 / 0</div>
+                    <div class="meta-value" th:if="${volumeStats == null}">0 / 0 / 0</div>
+                    <div class="meta-help" th:if="${volumeStats != null}" th:text="${volumeStats.gradeText()}">A:0 H:0 G:0 E:0</div>
                 </div>
             </div>
 

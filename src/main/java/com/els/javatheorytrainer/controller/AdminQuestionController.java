@@ -11,6 +11,8 @@ import com.els.javatheorytrainer.repository.QuestionRepository;
 import com.els.javatheorytrainer.repository.SectionRepository;
 import com.els.javatheorytrainer.repository.VolumeRepository;
 import com.els.javatheorytrainer.service.MarkdownService;
+import com.els.javatheorytrainer.service.PracticeService;
+import com.els.javatheorytrainer.service.PracticeStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,10 +33,13 @@ public class AdminQuestionController {
     private final SectionRepository sectionRepository;
     private final VolumeRepository volumeRepository;
     private final MarkdownService markdownService;
+    private final PracticeService practiceService;
+    private final PracticeStatsService practiceStatsService;
 
     @GetMapping
     public String list(Model model) {
         model.addAttribute("questions", questionRepository.findAllByOrderBySectionVolumeSortOrderAscSectionSortOrderAscSortOrderAscIdAsc());
+        model.addAttribute("sectionStatsById", practiceStatsService.sectionStatsById());
         return "admin/questions/list";
     }
 
@@ -128,6 +133,12 @@ public class AdminQuestionController {
         return "redirect:/admin/questions";
     }
 
+    @PostMapping("/{id}/reset-practice")
+    public String resetPractice(@PathVariable Long id, @RequestHeader(value = "Referer", required = false) String referer) {
+        practiceService.resetQuestionPracticeStats(id);
+        return redirectBack(referer, "/admin/questions/" + id);
+    }
+
     private Question findQuestion(Long id) {
         return questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question not found: " + id));
@@ -210,5 +221,9 @@ public class AdminQuestionController {
         return question.getImages().stream()
                 .filter(image -> image.getRole() == role)
                 .toList();
+    }
+
+    private String redirectBack(String referer, String fallback) {
+        return "redirect:" + (referer == null || referer.isBlank() ? fallback : referer);
     }
 }

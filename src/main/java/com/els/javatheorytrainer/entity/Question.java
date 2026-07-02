@@ -1,6 +1,7 @@
 package com.els.javatheorytrainer.entity;
 
 import com.els.javatheorytrainer.enums.Difficulty;
+import com.els.javatheorytrainer.enums.PracticeGrade;
 import com.els.javatheorytrainer.enums.QuestionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -192,6 +193,18 @@ public class Question {
     @Column(nullable = false)
     private int wrongTotalCount = 0;
 
+    @Column(nullable = false)
+    private int againCount = 0;
+
+    @Column(nullable = false)
+    private int hardCount = 0;
+
+    @Column(nullable = false)
+    private int goodCount = 0;
+
+    @Column(nullable = false)
+    private int easyCount = 0;
+
     private LocalDateTime lastShownAt;
 
     private LocalDateTime lastAnsweredAt;
@@ -265,6 +278,15 @@ public class Question {
             }
         } else {
             this.wrongTotalCount++;
+        }
+    }
+
+    public void registerGrade(PracticeGrade grade) {
+        switch (grade) {
+            case AGAIN -> this.againCount++;
+            case HARD -> this.hardCount++;
+            case GOOD -> this.goodCount++;
+            case EASY -> this.easyCount++;
         }
     }
 }

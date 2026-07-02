@@ -21,6 +21,13 @@
                        th:href="@{/admin/sections/{id}/edit(id=${section.id})}">
                         Редагувати
                     </a>
+                    <form class="inline-form"
+                          th:action="@{/admin/sections/{id}/reset-practice(id=${section.id})}"
+                          method="post"
+                          onsubmit="return confirm('Reset practice stats for all questions in this section?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-danger" type="submit">Reset practice</button>
+                    </form>
                 </div>
             </div>
 
@@ -48,6 +55,13 @@
                 <div class="meta-item">
                     <div class="meta-label">Порядок</div>
                     <div class="meta-value" th:text="${section.sortOrder}">0</div>
+                </div>
+
+                <div class="meta-item">
+                    <div class="meta-label">Practice progress</div>
+                    <div class="meta-value" th:if="${sectionStats != null}" th:text="${sectionStats.progressText()}">0 / 0 / 0</div>
+                    <div class="meta-value" th:if="${sectionStats == null}">0 / 0 / 0</div>
+                    <div class="meta-help" th:if="${sectionStats != null}" th:text="${sectionStats.gradeText()}">A:0 H:0 G:0 E:0</div>
                 </div>
             </div>
 
