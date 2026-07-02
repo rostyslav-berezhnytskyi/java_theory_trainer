@@ -698,12 +698,42 @@ textarea.form-control {
 
 @media (max-width: 520px) {
     .main {
-        padding: 10px;
+        padding: 8px;
     }
 
     .card {
-        padding: 12px;
-        border-radius: 12px;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-label {
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        padding: 9px 10px;
+    }
+
+    .content-block {
+        margin-bottom: 14px;
+    }
+
+    .content-box {
+        padding: 10px 11px;
+        border-radius: 10px;
     }
 
     .table td {
@@ -726,6 +756,42 @@ textarea.form-control {
 
     .actions {
         flex-direction: column;
+    }
+
+    .practice-answer-input {
+        min-height: 160px;
+    }
+
+    .practice-question-text {
+        font-size: 17px;
+        line-height: 1.45;
+    }
+
+    .practice-stats-grid {
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .practice-stat-card {
+        padding: 9px 10px;
+        border-radius: 10px;
+    }
+
+    .practice-stat-main {
+        font-size: 19px;
+    }
+
+    .ai-evaluation {
+        padding-top: 14px;
+    }
+
+    .ai-chat {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+
+    .ai-chat-messages {
+        max-height: 300px;
     }
 }
 

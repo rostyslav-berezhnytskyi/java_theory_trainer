@@ -1,11 +1,11 @@
 services:
   java-theory-trainer-db:
     image: postgres:16-alpine
-    container_name: java-theory-trainer-db
+    container_name: ${COMPOSE_PROJECT_NAME:-java-theory-trainer}-db
     restart: unless-stopped
 
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_HOST_PORT:-5434}:5432"
 
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -13,13 +13,73 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 
     volumes:
-      - java_theory_trainer_db_data:/var/lib/postgresql/data
+      - ${DB_DATA_PATH:-java_theory_trainer_db_data}:/var/lib/postgresql/data
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  java-theory-trainer-app:
+    image: ${APP_IMAGE:-java-theory-trainer:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME:-java-theory-trainer}-app
+    restart: unless-stopped
+    env_file:
+      - .env
+
+    environment:
+      DB_HOST: java-theory-trainer-db
+      DB_PORT: 5432
+      APP_UPLOADS_ROOT: /app/uploads
+      SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL:-false}
+
+    ports:
+      - "${APP_HOST_PORT:-8085}:8080"
+
+    volumes:
+      - ${APP_UPLOADS_PATH:-./data/uploads}:/app/uploads
+
+    depends_on:
+      java-theory-trainer-db:
+        condition: service_healthy
+
+  java-theory-trainer-backup:
+    image: postgres:16-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-java-theory-trainer}-backup
+    restart: unless-stopped
+    env_file:
+      - .env
+
+    environment:
+      DB_HOST: java-theory-trainer-db
+      DB_PORT: 5432
+      PGPASSWORD: ${DB_PASSWORD}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+
+    volumes:
+      - ${BACKUP_PATH:-./backups}:/backups
+
+    depends_on:
+      java-theory-trainer-db:
+        condition: service_healthy
+
+    command: >
+      sh -c '
+        set -eu;
+        mkdir -p /backups;
+        while true; do
+          file="/backups/$${DB_NAME}_$$(date +%Y%m%d_%H%M%S).sql.gz";
+          echo "Creating backup $$file";
+          pg_dump -h "$${DB_HOST}" -p "$${DB_PORT}" -U "$${DB_USERNAME}" -d "$${DB_NAME}" | gzip > "$$file";
+          find /backups -type f -name "$${DB_NAME}_*.sql.gz" -mtime +"$${BACKUP_RETENTION_DAYS}" -delete;
+          sleep "$${BACKUP_INTERVAL_SECONDS}";
+        done
+      '
 
 volumes:
   java_theory_trainer_db_data:

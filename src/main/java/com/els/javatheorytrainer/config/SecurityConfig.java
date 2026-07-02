@@ -22,7 +22,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Value("${app.security.remember-me-key}") String rememberMeKey,
+            @Value("${app.security.remember-me-validity-seconds}") int rememberMeValiditySeconds
+    ) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -38,7 +42,14 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .formLogin(Customizer.withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/"))
+                .rememberMe(rememberMe -> rememberMe
+                        .key(rememberMeKey)
+                        .tokenValiditySeconds(rememberMeValiditySeconds)
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/")
+                        .deleteCookies("JSESSIONID", "remember-me")
+                )
                 .build();
     }
 
