@@ -379,8 +379,17 @@ textarea.form-control {
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 14px 16px;
+    line-height: 1.45;
+}
+
+/* Для звичайного plain text, де треба зберігати переноси */
+.content-box:not(.markdown-content) {
     white-space: pre-wrap;
-    line-height: 1.5;
+}
+
+/* Для Markdown не можна pre-wrap, бо він розтягує HTML */
+.content-box.markdown-content {
+    white-space: normal;
 }
 
 .meta-grid {
@@ -1220,60 +1229,103 @@ textarea.form-control {
     background: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 10px 14px;
 }
 
 .details-box summary {
     cursor: pointer;
     font-weight: 800;
     color: #2563eb;
-    margin-bottom: 10px;
+}
+
+.details-box[open] summary {
+    margin-bottom: 8px;
 }
 
 .markdown-content {
-    line-height: 1.65;
+    line-height: 1.48;
+    font-size: 15px;
+}
+
+.markdown-content > *:first-child {
+    margin-top: 0;
+}
+
+.markdown-content > *:last-child {
+    margin-bottom: 0;
 }
 
 .markdown-content p {
-    margin: 0 0 12px;
+    margin: 0 0 8px;
+}
+
+.markdown-content h2 {
+    margin: 18px 0 8px;
+    font-size: 20px;
+    line-height: 1.25;
+    color: #111827;
+}
+
+.markdown-content h3 {
+    margin: 16px 0 7px;
+    font-size: 17px;
+    line-height: 1.25;
+    color: #111827;
 }
 
 .markdown-content ul,
 .markdown-content ol {
-    margin: 10px 0 14px 22px;
-    padding-left: 18px;
+    margin: 6px 0 10px 22px;
+    padding-left: 16px;
 }
 
 .markdown-content li {
-    margin-bottom: 6px;
+    margin-bottom: 3px;
 }
 
 .markdown-content li p {
     margin: 0;
 }
 
-.markdown-content li + li {
-    margin-top: 4px;
+.markdown-content strong {
+    font-weight: 800;
+}
+
+.markdown-content code {
+    background: #eef2ff;
+    padding: 1px 5px;
+    border-radius: 5px;
+    font-family: Consolas, monospace;
+    font-size: 0.94em;
 }
 
 .markdown-content pre {
     background: #111827;
     color: #f9fafb;
-    padding: 14px;
+    padding: 12px 14px;
     border-radius: 12px;
     overflow-x: auto;
-}
-
-.markdown-content code {
-    background: #eef2ff;
-    padding: 2px 5px;
-    border-radius: 5px;
-    font-family: Consolas, monospace;
-    font-size: 0.95em;
+    margin: 8px 0 12px;
+    line-height: 1.45;
 }
 
 .markdown-content pre code {
     background: transparent;
     padding: 0;
     color: inherit;
+    font-size: 0.95em;
+}
+
+.markdown-content blockquote {
+    margin: 8px 0 12px;
+    padding: 8px 12px;
+    border-left: 4px solid #2563eb;
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+
+.markdown-content hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 16px 0;
 }
