@@ -13,14 +13,49 @@
 
         <section class="card">
             <div class="card-header">
-                <h2 class="card-title">Список томів</h2>
+                <div>
+                    <h2 class="card-title">Список томів</h2>
+                    <div class="card-subtitle"
+                         th:if="${volumesPage != null}"
+                         th:text="'Showing ' + ${volumesPage.numberOfElements} + ' of ' + ${volumesPage.totalElements} + ' volumes'">
+                        Showing 40 of 40 volumes
+                    </div>
+                </div>
 
                 <a class="btn btn-primary" th:href="@{/admin/volumes/new}">
                     + Додати том
                 </a>
             </div>
 
-            <table class="table">
+            <form class="filter-panel" th:action="@{/admin/volumes}" method="get">
+                <div class="filter-grid filter-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="volumeSearch">Search</label>
+                        <input class="form-control"
+                               id="volumeSearch"
+                               type="search"
+                               name="search"
+                               th:value="${search}"
+                               placeholder="Volume or slug">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="volumeStatusFilter">Status</label>
+                        <select class="form-control" id="volumeStatusFilter" name="active">
+                            <option value="">Any status</option>
+                            <option value="true" th:selected="${selectedActive == true}">Active</option>
+                            <option value="false" th:selected="${selectedActive == false}">Archived</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn btn-primary" type="submit">Apply filters</button>
+                    <a class="btn btn-secondary" th:href="@{/admin/volumes}">Clear</a>
+                </div>
+            </form>
+
+            <table class="table compact-list-table volume-list-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -98,6 +133,30 @@
                 </tr>
                 </tbody>
             </table>
+
+            <nav class="pagination"
+                 th:if="${totalPages != null && totalPages > 1}"
+                 aria-label="Volume pages">
+                <a class="pagination-link"
+                   th:classappend="${volumesPage.first} ? ' disabled'"
+                   th:href="${volumesPage.first} ? '#' : @{/admin/volumes(page=${currentPage - 1}, search=${search}, active=${selectedActive})}">
+                    Previous
+                </a>
+
+                <a class="pagination-link"
+                   th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                   th:classappend="${pageNumber == currentPage} ? ' active'"
+                   th:href="@{/admin/volumes(page=${pageNumber}, search=${search}, active=${selectedActive})}"
+                   th:text="${pageNumber}">
+                    1
+                </a>
+
+                <a class="pagination-link"
+                   th:classappend="${volumesPage.last} ? ' disabled'"
+                   th:href="${volumesPage.last} ? '#' : @{/admin/volumes(page=${currentPage + 1}, search=${search}, active=${selectedActive})}">
+                    Next
+                </a>
+            </nav>
         </section>
     </main>
 

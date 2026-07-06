@@ -13,14 +13,66 @@
 
         <section class="card">
             <div class="card-header">
-                <h2 class="card-title">Список розділів</h2>
+                <div>
+                    <h2 class="card-title">Список розділів</h2>
+                    <div class="card-subtitle"
+                         th:if="${sectionsPage != null}"
+                         th:text="'Showing ' + ${sectionsPage.numberOfElements} + ' of ' + ${sectionsPage.totalElements} + ' categories'">
+                        Showing 20 of 90 categories
+                    </div>
+                </div>
 
                 <a class="btn btn-primary" th:href="@{/admin/sections/new}">
                     + Додати розділ
                 </a>
             </div>
 
-            <table class="table">
+            <form class="filter-panel" th:action="@{/admin/sections}" method="get">
+                <div class="filter-grid filter-grid-3">
+                    <div class="form-group">
+                        <label class="form-label" for="sectionSearch">Search</label>
+                        <input class="form-control"
+                               id="sectionSearch"
+                               type="search"
+                               name="search"
+                               th:value="${search}"
+                               placeholder="Category, slug, volume">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sectionVolumeFilter">Volume</label>
+                        <select class="form-control"
+                                id="sectionVolumeFilter"
+                                name="volumeId"
+                                data-basic-select
+                                data-placeholder="Any volume">
+                            <option value="">Any volume</option>
+                            <option th:each="volume : ${volumes}"
+                                    th:value="${volume.id}"
+                                    th:selected="${selectedVolumeId != null && selectedVolumeId == volume.id}"
+                                    th:text="${volume.title}">
+                                Java Core
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sectionStatusFilter">Status</label>
+                        <select class="form-control" id="sectionStatusFilter" name="active">
+                            <option value="">Any status</option>
+                            <option value="true" th:selected="${selectedActive == true}">Active</option>
+                            <option value="false" th:selected="${selectedActive == false}">Archived</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn btn-primary" type="submit">Apply filters</button>
+                    <a class="btn btn-secondary" th:href="@{/admin/sections}">Clear</a>
+                </div>
+            </form>
+
+            <table class="table compact-list-table section-list-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -105,6 +157,30 @@
                 </tr>
                 </tbody>
             </table>
+
+            <nav class="pagination"
+                 th:if="${totalPages != null && totalPages > 1}"
+                 aria-label="Category pages">
+                <a class="pagination-link"
+                   th:classappend="${sectionsPage.first} ? ' disabled'"
+                   th:href="${sectionsPage.first} ? '#' : @{/admin/sections(page=${currentPage - 1}, search=${search}, volumeId=${selectedVolumeId}, active=${selectedActive})}">
+                    Previous
+                </a>
+
+                <a class="pagination-link"
+                   th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                   th:classappend="${pageNumber == currentPage} ? ' active'"
+                   th:href="@{/admin/sections(page=${pageNumber}, search=${search}, volumeId=${selectedVolumeId}, active=${selectedActive})}"
+                   th:text="${pageNumber}">
+                    1
+                </a>
+
+                <a class="pagination-link"
+                   th:classappend="${sectionsPage.last} ? ' disabled'"
+                   th:href="${sectionsPage.last} ? '#' : @{/admin/sections(page=${currentPage + 1}, search=${search}, volumeId=${selectedVolumeId}, active=${selectedActive})}">
+                    Next
+                </a>
+            </nav>
         </section>
     </main>
 

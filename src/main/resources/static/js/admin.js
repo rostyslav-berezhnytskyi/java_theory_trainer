@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initClickableRows();
     initImageLightbox();
     initAiPracticeChat();
+    initPracticeHintToggle();
     initPracticeVoiceControls();
     initAiAudioTranscription();
 });
@@ -253,6 +254,24 @@ function setAiChatPending(form, pending) {
     if (input) {
         input.disabled = pending;
     }
+}
+
+function initPracticeHintToggle() {
+    document.querySelectorAll('.js-toggle-hint').forEach(function (button) {
+        const hint = document.getElementById(button.getAttribute('aria-controls'));
+
+        if (!hint) {
+            return;
+        }
+
+        button.addEventListener('click', function () {
+            const isHidden = hint.hidden;
+
+            hint.hidden = !isHidden;
+            button.setAttribute('aria-expanded', String(isHidden));
+            button.textContent = isHidden ? 'Hide hint' : 'Show hint';
+        });
+    });
 }
 
 function initPracticeVoiceControls() {

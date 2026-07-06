@@ -67,7 +67,70 @@
 
             <div class="content-block">
                 <h3 class="content-block-title">Опис</h3>
-                <div class="content-box" th:text="${section.description ?: '—'}"></div>
+                <div class="content-box markdown-content"
+                     th:if="${descriptionHtml != null && !descriptionHtml.isBlank()}"
+                     th:utext="${descriptionHtml}">
+                </div>
+                <div class="content-box"
+                     th:if="${descriptionHtml == null || descriptionHtml.isBlank()}">
+                    —
+                </div>
+            </div>
+            <div class="content-block">
+                <h3 class="content-block-title">Questions in this category</h3>
+
+                <table class="table compact-list-table related-question-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Question</th>
+                        <th>Practice</th>
+                        <th>Difficulty</th>
+                        <th>Status</th>
+                        <th>Order</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr class="clickable-row"
+                        th:each="question : ${questions}"
+                        th:data-row-href="@{/admin/questions/{id}(id=${question.id})}">
+                        <td data-label="ID" th:text="${question.id}">1</td>
+                        <td data-label="Question">
+                            <div class="question-preview" th:text="${question.questionText}">
+                                What is JVM?
+                            </div>
+                        </td>
+                        <td data-label="Practice">
+                            <div class="progress-cell">
+                                <strong>
+                                    <span th:text="${question.goodCount + question.easyCount}">0</span>
+                                    <span> / </span>
+                                    <span th:text="${question.timesShown}">0</span>
+                                    <span> / 1</span>
+                                </strong>
+                                <span>
+                                    A:<span th:text="${question.againCount}">0</span>
+                                    H:<span th:text="${question.hardCount}">0</span>
+                                    G:<span th:text="${question.goodCount}">0</span>
+                                    E:<span th:text="${question.easyCount}">0</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td data-label="Difficulty" th:text="${question.difficulty}">MEDIUM</td>
+                        <td data-label="Status">
+                            <span th:if="${question.status.name() == 'ACTIVE'}" class="badge badge-green">ACTIVE</span>
+                            <span th:if="${question.status.name() == 'DRAFT'}" class="badge badge-gray">DRAFT</span>
+                            <span th:if="${question.status.name() == 'ARCHIVED'}" class="badge badge-gray">ARCHIVED</span>
+                        </td>
+                        <td data-label="Order" th:text="${question.sortOrder}">0</td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(questions)}">
+                        <td colspan="6">No questions in this category yet.</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>

@@ -13,14 +13,110 @@
 
         <section class="card">
             <div class="card-header">
-                <h2 class="card-title">Список питань</h2>
+                <div>
+                    <h2 class="card-title">Список питань</h2>
+                    <div class="card-subtitle"
+                         th:if="${questionsPage != null}"
+                         th:text="'Showing ' + ${questionsPage.numberOfElements} + ' of ' + ${questionsPage.totalElements} + ' questions'">
+                        Showing 20 of 90 questions
+                    </div>
+                </div>
 
                 <a class="btn btn-primary" th:href="@{/admin/questions/new}">
                     + Додати питання
                 </a>
             </div>
 
-            <table class="table">
+            <form class="filter-panel" th:action="@{/admin/questions}" method="get">
+                <div class="filter-grid filter-grid-6">
+                    <div class="form-group">
+                        <label class="form-label" for="questionSearch">Search</label>
+                        <input class="form-control"
+                               id="questionSearch"
+                               type="search"
+                               name="search"
+                               th:value="${search}"
+                               placeholder="Question, volume, category">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="volumeFilter">Volume</label>
+                        <select class="form-control"
+                                id="volumeFilter"
+                                name="volumeId"
+                                data-basic-select
+                                data-placeholder="Any volume">
+                            <option value="">Any volume</option>
+                            <option th:each="volume : ${volumes}"
+                                    th:value="${volume.id}"
+                                    th:selected="${selectedVolumeId != null && selectedVolumeId == volume.id}"
+                                    th:text="${volume.title}">
+                                Java Core
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sectionFilter">Category</label>
+                        <select class="form-control"
+                                id="sectionFilter"
+                                name="sectionId"
+                                data-basic-select
+                                data-placeholder="Any category">
+                            <option value="">Any category</option>
+                            <option th:each="section : ${sections}"
+                                    th:value="${section.id}"
+                                    th:selected="${selectedSectionId != null && selectedSectionId == section.id}"
+                                    th:text="${section.volume.title + ' / ' + section.title}">
+                                Java Core / JVM
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="tagFilter">Tag</label>
+                        <input class="form-control"
+                               id="tagFilter"
+                               type="search"
+                               name="tag"
+                               th:value="${selectedTag}"
+                               placeholder="jvm">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="difficultyFilter">Difficulty</label>
+                        <select class="form-control" id="difficultyFilter" name="difficulty">
+                            <option value="">Any difficulty</option>
+                            <option th:each="difficulty : ${difficulties}"
+                                    th:value="${difficulty}"
+                                    th:selected="${selectedDifficulty == difficulty}"
+                                    th:text="${difficulty}">
+                                MEDIUM
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="statusFilter">Status</label>
+                        <select class="form-control" id="statusFilter" name="status">
+                            <option value="">Any status</option>
+                            <option th:each="status : ${statuses}"
+                                    th:value="${status}"
+                                    th:selected="${selectedStatus == status}"
+                                    th:text="${status}">
+                                ACTIVE
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn btn-primary" type="submit">Apply filters</button>
+                    <a class="btn btn-secondary" th:href="@{/admin/questions}">Clear</a>
+                </div>
+            </form>
+
+            <table class="table compact-list-table question-list-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -121,6 +217,30 @@
                 </tr>
                 </tbody>
             </table>
+
+            <nav class="pagination"
+                 th:if="${totalPages != null && totalPages > 1}"
+                 aria-label="Questions pages">
+                <a class="pagination-link"
+                   th:classappend="${questionsPage.first} ? ' disabled'"
+                   th:href="${questionsPage.first} ? '#' : @{/admin/questions(page=${currentPage - 1}, search=${search}, volumeId=${selectedVolumeId}, sectionId=${selectedSectionId}, tag=${selectedTag}, difficulty=${selectedDifficulty}, status=${selectedStatus})}">
+                    Previous
+                </a>
+
+                <a class="pagination-link"
+                   th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                   th:classappend="${pageNumber == currentPage} ? ' active'"
+                   th:href="@{/admin/questions(page=${pageNumber}, search=${search}, volumeId=${selectedVolumeId}, sectionId=${selectedSectionId}, tag=${selectedTag}, difficulty=${selectedDifficulty}, status=${selectedStatus})}"
+                   th:text="${pageNumber}">
+                    1
+                </a>
+
+                <a class="pagination-link"
+                   th:classappend="${questionsPage.last} ? ' disabled'"
+                   th:href="${questionsPage.last} ? '#' : @{/admin/questions(page=${currentPage + 1}, search=${search}, volumeId=${selectedVolumeId}, sectionId=${selectedSectionId}, tag=${selectedTag}, difficulty=${selectedDifficulty}, status=${selectedStatus})}">
+                    Next
+                </a>
+            </nav>
         </section>
     </main>
 

@@ -1,14 +1,20 @@
 package com.els.javatheorytrainer.controller;
 
 import com.els.javatheorytrainer.entity.Volume;
+import com.els.javatheorytrainer.repository.SectionRepository;
 import com.els.javatheorytrainer.repository.VolumeRepository;
+import com.els.javatheorytrainer.service.MarkdownService;
 import com.els.javatheorytrainer.service.PracticeService;
 import com.els.javatheorytrainer.service.PracticeStatsService;
 import com.els.javatheorytrainer.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 /**
  * Admin controller for managing study volumes.
@@ -24,7 +30,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminVolumeController {
 
+    private static final int VOLUMES_PAGE_SIZE = 40;
+
     private final VolumeRepository volumeRepository;
+    private final SectionRepository sectionRepository;
+    private final MarkdownService markdownService;
     private final PracticeService practiceService;
     private final PracticeStatsService practiceStatsService;
 
@@ -34,6 +44,8 @@ public class AdminVolumeController {
                 .orElseThrow(() -> new IllegalArgumentException("Volume not found: " + id));
 
         model.addAttribute("volume", volume);
+        model.addAttribute("sections", sectionRepository.findByVolumeIdOrderBySortOrderAscTitleAsc(id));
+        model.addAttribute("descriptionHtml", markdownService.toHtml(volume.getDescription()));
         model.addAttribute("volumeStats", practiceStatsService.volumeStatsById().get(id));
 
         return "admin/volumes/view";
@@ -43,8 +55,23 @@ public class AdminVolumeController {
      * Shows all volumes.
      */
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("volumes", volumeRepository.findAllByOrderBySortOrderAscTitleAsc());
+    public String list(@RequestParam(defaultValue = "1") int page,
+                       @RequestParam(required = false) String search,
+                       @RequestParam(required = false) Boolean active,
+                       Model model) {
+        Page<Volume> volumesPage = volumeRepository.findAdminPage(
+                blankToNull(search),
+                active,
+                PageRequest.of(normalizePage(page), VOLUMES_PAGE_SIZE)
+        );
+
+        model.addAttribute("volumesPage", volumesPage);
+        model.addAttribute("volumes", volumesPage.getContent());
+        model.addAttribute("currentPage", volumesPage.getNumber() + 1);
+        model.addAttribute("totalPages", volumesPage.getTotalPages());
+        model.addAttribute("pageSize", VOLUMES_PAGE_SIZE);
+        model.addAttribute("search", search);
+        model.addAttribute("selectedActive", active);
         model.addAttribute("volumeStatsById", practiceStatsService.volumeStatsById());
         return "admin/volumes/list";
     }
@@ -158,5 +185,13 @@ public class AdminVolumeController {
 
     private String redirectBack(String referer, String fallback) {
         return "redirect:" + (referer == null || referer.isBlank() ? fallback : referer);
+    }
+
+    private int normalizePage(int page) {
+        return Math.max(page, 1) - 1;
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim().toLowerCase(Locale.ROOT);
     }
 }

@@ -3,6 +3,8 @@ package com.els.javatheorytrainer.repository;
 import com.els.javatheorytrainer.dto.PracticeProgressStats;
 import com.els.javatheorytrainer.entity.Question;
 import com.els.javatheorytrainer.enums.QuestionStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +15,49 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findAllByOrderBySectionVolumeSortOrderAscSectionSortOrderAscSortOrderAscIdAsc();
+
+    @Query(
+            value = """
+                    select q
+                    from Question q
+                    join fetch q.section s
+                    join fetch s.volume v
+                    where (:search is null
+                        or lower(q.questionText) like concat('%', cast(:search as string), '%')
+                        or lower(s.title) like concat('%', cast(:search as string), '%')
+                        or lower(v.title) like concat('%', cast(:search as string), '%'))
+                      and (:volumeId is null or v.id = :volumeId)
+                      and (:sectionId is null or s.id = :sectionId)
+                      and (:tag is null or lower(q.tags) like concat('%', cast(:tag as string), '%'))
+                      and (:difficulty is null or q.difficulty = :difficulty)
+                      and (:status is null or q.status = :status)
+                    order by v.sortOrder asc, s.sortOrder asc, q.sortOrder asc, q.id asc
+                    """,
+            countQuery = """
+                    select count(q)
+                    from Question q
+                    join q.section s
+                    join s.volume v
+                    where (:search is null
+                        or lower(q.questionText) like concat('%', cast(:search as string), '%')
+                        or lower(s.title) like concat('%', cast(:search as string), '%')
+                        or lower(v.title) like concat('%', cast(:search as string), '%'))
+                      and (:volumeId is null or v.id = :volumeId)
+                      and (:sectionId is null or s.id = :sectionId)
+                      and (:tag is null or lower(q.tags) like concat('%', cast(:tag as string), '%'))
+                      and (:difficulty is null or q.difficulty = :difficulty)
+                      and (:status is null or q.status = :status)
+                    """
+    )
+    Page<Question> findAdminPage(
+            @Param("search") String search,
+            @Param("volumeId") Long volumeId,
+            @Param("sectionId") Long sectionId,
+            @Param("tag") String tag,
+            @Param("difficulty") com.els.javatheorytrainer.enums.Difficulty difficulty,
+            @Param("status") QuestionStatus status,
+            Pageable pageable
+    );
 
     List<Question> findBySectionIdOrderBySortOrderAscIdAsc(Long sectionId);
 

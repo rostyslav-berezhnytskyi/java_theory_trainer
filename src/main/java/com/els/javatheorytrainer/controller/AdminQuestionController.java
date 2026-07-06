@@ -14,12 +14,15 @@ import com.els.javatheorytrainer.service.MarkdownService;
 import com.els.javatheorytrainer.service.PracticeService;
 import com.els.javatheorytrainer.service.PracticeStatsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Admin controller for managing questions.
@@ -29,6 +32,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminQuestionController {
 
+    private static final int QUESTIONS_PAGE_SIZE = 20;
+
     private final QuestionRepository questionRepository;
     private final SectionRepository sectionRepository;
     private final VolumeRepository volumeRepository;
@@ -37,8 +42,42 @@ public class AdminQuestionController {
     private final PracticeStatsService practiceStatsService;
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("questions", questionRepository.findAllByOrderBySectionVolumeSortOrderAscSectionSortOrderAscSortOrderAscIdAsc());
+    public String list(@RequestParam(defaultValue = "1") int page,
+                       @RequestParam(required = false) String search,
+                       @RequestParam(required = false) Long volumeId,
+                       @RequestParam(required = false) Long sectionId,
+                       @RequestParam(required = false) String tag,
+                       @RequestParam(required = false) Difficulty difficulty,
+                       @RequestParam(required = false) QuestionStatus status,
+                       Model model) {
+
+        String normalizedSearch = blankToNull(search);
+        String normalizedTag = blankToNull(tag);
+        Page<Question> questionsPage = questionRepository.findAdminPage(
+                normalizedSearch,
+                volumeId,
+                sectionId,
+                normalizedTag,
+                difficulty,
+                status,
+                PageRequest.of(normalizePage(page), QUESTIONS_PAGE_SIZE)
+        );
+
+        model.addAttribute("questionsPage", questionsPage);
+        model.addAttribute("questions", questionsPage.getContent());
+        model.addAttribute("currentPage", questionsPage.getNumber() + 1);
+        model.addAttribute("totalPages", questionsPage.getTotalPages());
+        model.addAttribute("pageSize", QUESTIONS_PAGE_SIZE);
+        model.addAttribute("search", search);
+        model.addAttribute("selectedVolumeId", volumeId);
+        model.addAttribute("selectedSectionId", sectionId);
+        model.addAttribute("selectedTag", tag);
+        model.addAttribute("selectedDifficulty", difficulty);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("volumes", volumeRepository.findAllByOrderBySortOrderAscTitleAsc());
+        model.addAttribute("sections", sectionRepository.findAllByOrderByVolumeSortOrderAscSortOrderAscTitleAsc());
+        model.addAttribute("difficulties", Difficulty.values());
+        model.addAttribute("statuses", QuestionStatus.values());
         model.addAttribute("sectionStatsById", practiceStatsService.sectionStatsById());
         return "admin/questions/list";
     }
@@ -225,5 +264,13 @@ public class AdminQuestionController {
 
     private String redirectBack(String referer, String fallback) {
         return "redirect:" + (referer == null || referer.isBlank() ? fallback : referer);
+    }
+
+    private int normalizePage(int page) {
+        return Math.max(page, 1) - 1;
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim().toLowerCase(Locale.ROOT);
     }
 }

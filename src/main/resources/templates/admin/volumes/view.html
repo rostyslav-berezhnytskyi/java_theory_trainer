@@ -72,7 +72,48 @@
 
             <div class="content-block">
                 <h3 class="content-block-title">Опис</h3>
-                <div class="content-box" th:text="${volume.description ?: '—'}"></div>
+                <div class="content-box markdown-content"
+                     th:if="${descriptionHtml != null && !descriptionHtml.isBlank()}"
+                     th:utext="${descriptionHtml}">
+                </div>
+                <div class="content-box"
+                     th:if="${descriptionHtml == null || descriptionHtml.isBlank()}">
+                    —
+                </div>
+            </div>
+            <div class="content-block">
+                <h3 class="content-block-title">Categories in this volume</h3>
+
+                <table class="table compact-list-table related-section-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Status</th>
+                        <th>Order</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr class="clickable-row"
+                        th:each="section : ${sections}"
+                        th:data-row-href="@{/admin/sections/{id}(id=${section.id})}">
+                        <td data-label="ID" th:text="${section.id}">1</td>
+                        <td data-label="Name" th:text="${section.title}">JVM, Memory</td>
+                        <td data-label="Slug" th:text="${section.slug}">jvm-memory</td>
+                        <td data-label="Status">
+                            <span th:if="${section.active}" class="badge badge-green">Active</span>
+                            <span th:if="${!section.active}" class="badge badge-gray">Archived</span>
+                        </td>
+                        <td data-label="Order" th:text="${section.sortOrder}">0</td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(sections)}">
+                        <td colspan="5">No categories in this volume yet.</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>

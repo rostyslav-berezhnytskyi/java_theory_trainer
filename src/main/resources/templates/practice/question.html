@@ -78,6 +78,30 @@
                 </div>
             </div>
 
+            <div class="content-block practice-hint">
+                <button class="btn btn-secondary btn-small js-toggle-hint"
+                        type="button"
+                        th:if="${hintHtml != null && !hintHtml.isBlank()}"
+                        aria-expanded="false"
+                        aria-controls="practiceHintContent">
+                    Show hint
+                </button>
+
+                <button class="btn btn-secondary btn-small"
+                        type="button"
+                        th:if="${hintHtml == null || hintHtml.isBlank()}"
+                        disabled>
+                    No hint for this question
+                </button>
+
+                <div class="content-box markdown-content practice-hint-content"
+                     th:if="${hintHtml != null && !hintHtml.isBlank()}"
+                     id="practiceHintContent"
+                     hidden
+                     th:utext="${hintHtml}">
+                </div>
+            </div>
+
             <div class="content-block" th:if="${!#lists.isEmpty(questionImages)}">
                 <h3 class="content-block-title">Зображення до питання</h3>
 
@@ -339,11 +363,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="content-block" th:if="${hintHtml != null && !hintHtml.isBlank()}">
-                    <h3 class="content-block-title">Підказка</h3>
-                    <div class="content-box markdown-content" th:utext="${hintHtml}"></div>
                 </div>
 
                 <div class="practice-grade-block">

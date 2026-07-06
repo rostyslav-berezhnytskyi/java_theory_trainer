@@ -35,8 +35,6 @@
                                 data-volume-select
                                 data-placeholder="Почни вводити назву тому..."
                                 required>
-                            <option value=""></option>
-
                             <option th:each="volume : ${volumes}"
                                     th:value="${volume.id}"
                                     th:text="${volume.title}">
