@@ -415,6 +415,53 @@ textarea.form-control {
     border-radius: 12px;
 }
 
+.filter-details {
+    margin-bottom: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.filter-details-toggle {
+    position: relative;
+    padding: 13px 44px 13px 14px;
+    color: #1e293b;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.filter-details-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.filter-details-toggle::after {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    content: "⌄";
+    color: #2563eb;
+    font-size: 20px;
+    transform: translateY(-55%);
+}
+
+.filter-details[open] .filter-details-toggle {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.filter-details[open] .filter-details-toggle::after {
+    content: "⌃";
+    transform: translateY(-40%);
+}
+
+.filter-panel-collapsible {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+}
+
 .filter-grid {
     display: grid;
     gap: 12px;
@@ -1896,5 +1943,11 @@ textarea.form-control {
         padding: 4px 6px;
         font-size: 11px;
         line-height: 1.15;
+    }
+}
+
+@media (max-width: 900px) {
+    .question-list-table .actions-cell {
+        display: none !important;
     }
 }

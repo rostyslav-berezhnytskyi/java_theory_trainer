@@ -27,7 +27,9 @@
                 </a>
             </div>
 
-            <form class="filter-panel" th:action="@{/admin/sections}" method="get">
+            <details class="filter-details">
+                <summary class="filter-details-toggle">Search and filters</summary>
+            <form class="filter-panel filter-panel-collapsible" th:action="@{/admin/sections}" method="get">
                 <div class="filter-grid filter-grid-3">
                     <div class="form-group">
                         <label class="form-label" for="sectionSearch">Search</label>
@@ -71,6 +73,7 @@
                     <a class="btn btn-secondary" th:href="@{/admin/sections}">Clear</a>
                 </div>
             </form>
+            </details>
 
             <table class="table compact-list-table section-list-table">
                 <thead>
