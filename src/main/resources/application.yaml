@@ -27,6 +27,8 @@ spring:
       max-request-size: 30MB
 
 server:
+  forward-headers-strategy: framework
+
   servlet:
     session:
       timeout: ${APP_SESSION_TIMEOUT:7d}

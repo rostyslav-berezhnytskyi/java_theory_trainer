@@ -61,6 +61,17 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findBySectionIdOrderBySortOrderAscIdAsc(Long sectionId);
 
+    @Query("""
+            select q
+            from Question q
+            join fetch q.section s
+            join fetch s.volume v
+            where v.id = :volumeId
+              and q.status = com.els.javatheorytrainer.enums.QuestionStatus.ACTIVE
+            order by s.sortOrder asc, s.title asc, s.id asc, q.sortOrder asc, q.id asc
+            """)
+    List<Question> findAllActiveForVolumeNavigation(@Param("volumeId") Long volumeId);
+
     List<Question> findByStatusOrderBySectionSortOrderAscSortOrderAscIdAsc(QuestionStatus status);
 
     List<Question> findByStatusAndSectionId(QuestionStatus status, Long sectionId);

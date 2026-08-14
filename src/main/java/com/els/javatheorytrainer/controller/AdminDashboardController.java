@@ -12,6 +12,11 @@ public class AdminDashboardController {
 
     private final AiUsageLogService aiUsageLogService;
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/admin";
+    }
+
     @GetMapping("/admin")
     public String adminDashboard(Model model) {
         model.addAttribute("aiUsageSummaries", aiUsageLogService.summarizeByOperationAndModel());

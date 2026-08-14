@@ -13,6 +13,7 @@ import com.els.javatheorytrainer.repository.VolumeRepository;
 import com.els.javatheorytrainer.service.MarkdownService;
 import com.els.javatheorytrainer.service.PracticeService;
 import com.els.javatheorytrainer.service.PracticeStatsService;
+import com.els.javatheorytrainer.service.QuestionDeletionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ public class AdminQuestionController {
     private final MarkdownService markdownService;
     private final PracticeService practiceService;
     private final PracticeStatsService practiceStatsService;
+    private final QuestionDeletionService questionDeletionService;
 
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page,
@@ -99,6 +101,7 @@ public class AdminQuestionController {
 
         model.addAttribute("questionImages", imagesByRole(question, ImageRole.QUESTION));
         model.addAttribute("answerImages", imagesByRole(question, ImageRole.ANSWER));
+        addQuestionNavigation(question, model);
 
         return "admin/questions/view";
     }
@@ -169,6 +172,12 @@ public class AdminQuestionController {
         question.setStatus(QuestionStatus.ACTIVE);
         questionRepository.save(question);
 
+        return "redirect:/admin/questions";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id) {
+        questionDeletionService.delete(id);
         return "redirect:/admin/questions";
     }
 
@@ -260,6 +269,27 @@ public class AdminQuestionController {
         return question.getImages().stream()
                 .filter(image -> image.getRole() == role)
                 .toList();
+    }
+
+    private void addQuestionNavigation(Question question, Model model) {
+        List<Question> volumeQuestions = questionRepository.findAllActiveForVolumeNavigation(
+                question.getSection().getVolume().getId()
+        );
+
+        if (volumeQuestions.size() < 2) {
+            return;
+        }
+
+        int currentIndex = volumeQuestions.indexOf(question);
+        if (currentIndex < 0) {
+            return;
+        }
+
+        int previousIndex = (currentIndex - 1 + volumeQuestions.size()) % volumeQuestions.size();
+        int nextIndex = (currentIndex + 1) % volumeQuestions.size();
+
+        model.addAttribute("previousQuestion", volumeQuestions.get(previousIndex));
+        model.addAttribute("nextQuestion", volumeQuestions.get(nextIndex));
     }
 
     private String redirectBack(String referer, String fallback) {
