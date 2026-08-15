@@ -17,7 +17,33 @@ document.addEventListener('DOMContentLoaded', function () {
     initPracticeHintToggle();
     initPracticeVoiceControls();
     initAiAudioTranscription();
+    initResponsiveEntityDescriptions();
 });
+
+function initResponsiveEntityDescriptions() {
+    const descriptions = document.querySelectorAll('.entity-description');
+    if (!descriptions.length) {
+        return;
+    }
+
+    const mobileQuery = window.matchMedia('(max-width: 900px)');
+    let wasMobile = mobileQuery.matches;
+
+    descriptions.forEach(function (description) {
+        description.open = !wasMobile;
+    });
+
+    mobileQuery.addEventListener('change', function (event) {
+        if (event.matches === wasMobile) {
+            return;
+        }
+
+        descriptions.forEach(function (description) {
+            description.open = !event.matches;
+        });
+        wasMobile = event.matches;
+    });
+}
 
 function initImageLightbox() {
     if (typeof GLightbox === 'undefined') {

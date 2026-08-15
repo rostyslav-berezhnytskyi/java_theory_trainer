@@ -15,7 +15,7 @@
             <div class="card-header">
                 <h2 class="card-title" th:text="${section.title}">JVM, Memory</h2>
 
-                <div class="actions">
+                <div class="actions entity-view-actions">
                     <a class="btn" th:href="@{/admin/sections}">← До списку</a>
                     <a class="btn btn-primary"
                        th:href="@{/admin/sections/{id}/edit(id=${section.id})}">
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <div class="meta-grid">
+            <div class="meta-grid entity-view-meta-grid">
                 <div class="meta-item">
                     <div class="meta-label">Том</div>
                     <div class="meta-value" th:text="${section.volume.title}">Java Core</div>
@@ -65,8 +65,8 @@
                 </div>
             </div>
 
-            <div class="content-block">
-                <h3 class="content-block-title">Опис</h3>
+            <details class="content-block entity-description" open>
+                <summary class="content-block-title entity-description-toggle">Опис</summary>
                 <div class="content-box markdown-content"
                      th:if="${descriptionHtml != null && !descriptionHtml.isBlank()}"
                      th:utext="${descriptionHtml}">
@@ -75,7 +75,7 @@
                      th:if="${descriptionHtml == null || descriptionHtml.isBlank()}">
                     —
                 </div>
-            </div>
+            </details>
             <div class="content-block">
                 <h3 class="content-block-title">Questions in this category</h3>
 

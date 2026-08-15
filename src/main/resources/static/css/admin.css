@@ -1951,3 +1951,102 @@ textarea.form-control {
         display: none !important;
     }
 }
+
+.entity-description-toggle {
+    list-style: none;
+}
+
+.entity-description-toggle::-webkit-details-marker {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .card-header .entity-view-actions {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        width: 100%;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .entity-view-actions .btn,
+    .entity-view-actions form,
+    .entity-view-actions button {
+        width: 100% !important;
+        min-width: 0;
+    }
+
+    .entity-view-actions .btn,
+    .entity-view-actions button {
+        min-height: 36px;
+        padding: 7px 5px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .entity-view-actions form button {
+        width: 100%;
+    }
+
+    .entity-view-meta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .entity-view-meta-grid .meta-item {
+        min-width: 0;
+        padding: 8px 10px;
+        border-radius: 10px;
+    }
+
+    .entity-view-meta-grid .meta-label,
+    .entity-view-meta-grid .meta-help {
+        font-size: 12px;
+    }
+
+    .entity-view-meta-grid .meta-value,
+    .entity-view-meta-grid .meta-help {
+        overflow-wrap: anywhere;
+    }
+
+    .entity-description {
+        margin-bottom: 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .entity-description-toggle {
+        position: relative;
+        margin: 0;
+        padding: 12px 42px 12px 14px;
+        color: #1e293b;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .entity-description-toggle::after {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        content: "⌄";
+        color: #2563eb;
+        font-size: 20px;
+        transform: translateY(-55%);
+    }
+
+    .entity-description[open] .entity-description-toggle {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .entity-description[open] .entity-description-toggle::after {
+        content: "⌃";
+        transform: translateY(-40%);
+    }
+
+    .entity-description .content-box {
+        border: 0;
+        border-radius: 0;
+    }
+}
